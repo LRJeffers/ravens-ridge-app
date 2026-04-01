@@ -1028,6 +1028,37 @@
             background: var(--blue-neon);
             border-radius: 3px;
         }
+        /* CAPÍTULOS: BUSCADOR Y LISTA COMPACTA */
+        .capitulos-buscador {
+            margin-bottom: 15px;
+        }
+        .capitulos-buscador input {
+            width: 100%;
+            padding: 12px;
+            background: #050505;
+            border: 1px solid var(--blue-neon);
+            color: var(--blue-neon);
+            font-family: var(--font-code);
+            font-size: 14px;
+        }
+        .capitulos-scroll {
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid var(--green-matrix);
+            padding: 10px;
+            background: #0a0a0a;
+            margin-top: 10px;
+        }
+        .capitulos-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .capitulos-scroll::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        .capitulos-scroll::-webkit-scrollbar-thumb {
+            background: var(--blue-neon);
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
@@ -1188,10 +1219,15 @@
             <p id="progress-text" class="progress-text">0% completado</p>
         </div>
         <div class="tomo-selector">
-            <button class="tomo-btn active" onclick="cambiarTomo(1)">TOMO 1</button>
-            <button class="tomo-btn" onclick="cambiarTomo(2)">TOMO 2</button>
+            <button class="tomo-btn active" onclick="cambiarTomo(1)">📖 LA SOMBRA DEL CUERVO</button>
+            <button class="tomo-btn" onclick="cambiarTomo(2)">📖 MISA DE CENIZA</button>
         </div>
-        <div id="capitulos-container"></div>
+        <!-- BUSCADOR DE CAPÍTULOS -->
+        <div class="capitulos-buscador">
+            <input type="text" id="capitulos-buscador-input" placeholder="🔍 Buscar capítulo (ej: '15', 'prólogo', 'epílogo')..." oninput="filtrarCapitulos()">
+        </div>
+        <!-- LISTA CON SCROLL -->
+        <div id="capitulos-container" class="capitulos-scroll"></div>
     </div>
 
     <!-- PANTALLA 8: TABLERO -->
@@ -1251,8 +1287,8 @@
         <div class="tablero-section">
             <h3>📁 SELECCIONAR CAPÍTULO</h3>
             <div class="tomo-selector">
-                <button class="tomo-btn active" onclick="cambiarTomoDiario(1)">TOMO 1</button>
-                <button class="tomo-btn" onclick="cambiarTomoDiario(2)">TOMO 2</button>
+                <button class="tomo-btn active" onclick="cambiarTomoDiario(1)">📖 LA SOMBRA DEL CUERVO</button>
+                <button class="tomo-btn" onclick="cambiarTomoDiario(2)">📖 MISA DE CENIZA</button>
             </div>
             <!-- BUSCADOR DE CAPÍTULOS EN DIARIO -->
             <div class="diario-buscador-capitulos">
@@ -1568,39 +1604,54 @@
             var tomoData = tomoActual === 1 ? CAPITULOS.tomo1 : CAPITULOS.tomo2;
             var progreso = getProgreso(), progresoTomo = tomoActual === 1 ? progreso.tomo1 : progreso.tomo2;
             var calificaciones = getCalificaciones(), diario = getDiario();
+            var filtro = document.getElementById('capitulos-buscador-input') ? document.getElementById('capitulos-buscador-input').value.toLowerCase() : '';
             var section = document.createElement('div'); section.className = 'tomo-section';
             section.innerHTML = '<h3>TOMO ' + tomoActual + ': ' + tomoData.titulo + '</h3>';
             var lista = document.createElement('div'); lista.className = 'capitulos-list';
             if (tomoData.prologo) {
                 var capId = 't' + tomoActual + '_p0', completado = progresoTomo.completados.indexOf(0) !== -1;
                 var tieneCalificacion = calificaciones[capId] ? true : false, tieneDiario = diario[capId] ? true : false;
-                var prologo = document.createElement('div'); prologo.className = 'capitulo-item special' + (completado ? ' completed' : '');
-                prologo.textContent = 'PRÓLOGO' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
-                prologo.onclick = function() { marcarCapitulo(tomoActual, 0); }; lista.appendChild(prologo);
+                var textoCap = 'PRÓLOGO' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
+                if (filtro === '' || textoCap.toLowerCase().includes(filtro)) {
+                    var prologo = document.createElement('div'); prologo.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                    prologo.textContent = textoCap;
+                    prologo.onclick = function() { marcarCapitulo(tomoActual, 0); }; lista.appendChild(prologo);
+                }
             }
             for (var i = 1; i <= tomoData.capitulos; i++) {
                 var capId = 't' + tomoActual + '_c' + i, completado = progresoTomo.completados.indexOf(i) !== -1;
                 var tieneCalificacion = calificaciones[capId] ? true : false, tieneDiario = diario[capId] ? true : false;
-                var cap = document.createElement('div'); cap.className = 'capitulo-item' + (completado ? ' completed' : '');
-                cap.textContent = 'CAP. ' + i + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
-                cap.onclick = (function(num) { return function() { marcarCapitulo(tomoActual, num); }; })(i); lista.appendChild(cap);
+                var textoCap = 'CAP. ' + i + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
+                if (filtro === '' || textoCap.toLowerCase().includes(filtro) || i.toString().includes(filtro)) {
+                    var cap = document.createElement('div'); cap.className = 'capitulo-item' + (completado ? ' completed' : '');
+                    cap.textContent = textoCap;
+                    cap.onclick = (function(num) { return function() { marcarCapitulo(tomoActual, num); }; })(i); lista.appendChild(cap);
+                }
             }
             if (tomoData.epilogue) {
                 var capId = 't' + tomoActual + '_epi', completado = progresoTomo.epilogue;
                 var tieneCalificacion = calificaciones[capId] ? true : false, tieneDiario = diario[capId] ? true : false;
-                var epilogue = document.createElement('div'); epilogue.className = 'capitulo-item special' + (completado ? ' completed' : '');
-                epilogue.textContent = 'EPÍLOGO' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
-                epilogue.onclick = function() { marcarCapitulo(tomoActual, 'epilogue'); }; lista.appendChild(epilogue);
+                var textoCap = 'EPÍLOGO' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
+                if (filtro === '' || textoCap.toLowerCase().includes(filtro)) {
+                    var epilogue = document.createElement('div'); epilogue.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                    epilogue.textContent = textoCap;
+                    epilogue.onclick = function() { marcarCapitulo(tomoActual, 'epilogue'); }; lista.appendChild(epilogue);
+                }
             }
             if (tomoData.extra) {
                 var capId = 't' + tomoActual + '_extra', completado = progresoTomo.extra;
                 var tieneCalificacion = calificaciones[capId] ? true : false, tieneDiario = diario[capId] ? true : false;
-                var extra = document.createElement('div'); extra.className = 'capitulo-item special' + (completado ? ' completed' : '');
-                extra.textContent = 'ESCENA EXTRA' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
-                extra.onclick = function() { marcarCapitulo(tomoActual, 'extra'); }; lista.appendChild(extra);
+                var textoCap = 'ESCENA EXTRA' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
+                if (filtro === '' || textoCap.toLowerCase().includes(filtro)) {
+                    var extra = document.createElement('div'); extra.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                    extra.textContent = textoCap;
+                    extra.onclick = function() { marcarCapitulo(tomoActual, 'extra'); }; lista.appendChild(extra);
+                }
             }
             section.appendChild(lista); container.appendChild(section); actualizarProgresoGlobal();
         }
+
+        function filtrarCapitulos() { renderizarCapitulos(); }
 
         function renderizarTablero() {
             var progreso = getProgreso(), culpableData = getCulpable(), evidenciasPerfiles = getEvidenciasPerfiles();
