@@ -22,6 +22,7 @@
             min-height: 100vh;
             padding: 20px;
             overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
         }
         .container {
             width: 100%;
@@ -996,6 +997,37 @@
             background: var(--green-matrix);
             color: var(--bg-color);
         }
+        /* DIARIO: BUSCADOR Y LISTA COMPACTA */
+        .diario-buscador-capitulos {
+            margin-bottom: 15px;
+        }
+        .diario-buscador-capitulos input {
+            width: 100%;
+            padding: 12px;
+            background: #050505;
+            border: 1px solid var(--blue-neon);
+            color: var(--blue-neon);
+            font-family: var(--font-code);
+            font-size: 14px;
+        }
+        .diario-capitulos-scroll {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid var(--green-matrix);
+            padding: 10px;
+            background: #0a0a0a;
+            margin-top: 10px;
+        }
+        .diario-capitulos-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .diario-capitulos-scroll::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        .diario-capitulos-scroll::-webkit-scrollbar-thumb {
+            background: var(--blue-neon);
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
@@ -1222,7 +1254,12 @@
                 <button class="tomo-btn active" onclick="cambiarTomoDiario(1)">TOMO 1</button>
                 <button class="tomo-btn" onclick="cambiarTomoDiario(2)">TOMO 2</button>
             </div>
-            <div id="diario-capitulos-lista" class="capitulos-list"></div>
+            <!-- BUSCADOR DE CAPÍTULOS EN DIARIO -->
+            <div class="diario-buscador-capitulos">
+                <input type="text" id="diario-buscador-input" placeholder="🔍 Buscar capítulo (ej: '15', 'prólogo')..." oninput="filtrarCapitulosDiario()">
+            </div>
+            <!-- LISTA CON SCROLL -->
+            <div id="diario-capitulos-lista" class="diario-capitulos-scroll"></div>
         </div>
         <div class="diario-editor-container">
             <div class="diario-toolbar">
@@ -1365,7 +1402,6 @@
 
         // INICIAR APP
         window.onload = function() {
-            // Configurar botón de audio unlock
             document.getElementById('audio-unlock-btn').addEventListener('click', function() {
                 audioDesbloqueado = true;
                 tocarSonido('click');
@@ -1379,20 +1415,13 @@
             var usuario = localStorage.getItem(CONFIG.claveUsuario);
             var noirDesbloqueado = localStorage.getItem(CONFIG.claveNoirDesbloqueado);
             var noirVisto = localStorage.getItem(CONFIG.claveNoirVisto);
-
-            if (bloqueoHasta && new Date().getTime() < bloqueoHasta) {
-                mostrarBloqueo();
-            } else if (usuario) {
+            if (bloqueoHasta && new Date().getTime() < bloqueoHasta) { mostrarBloqueo(); }
+            else if (usuario) {
                 iniciarBootSequence(usuario);
                 if (noirDesbloqueado === 'true' && noirVisto !== 'true') {
-                    setTimeout(function() { 
-                        mostrarRecompensaNoir(); 
-                        localStorage.setItem(CONFIG.claveNoirVisto, 'true');
-                    }, 2000);
+                    setTimeout(function() { mostrarRecompensaNoir(); localStorage.setItem(CONFIG.claveNoirVisto, 'true'); }, 2000);
                 }
-            } else {
-                mostrarPantalla('pantalla-seguridad');
-            }
+            } else { mostrarPantalla('pantalla-seguridad'); }
         }
 
         function tocarSonido(tipo) {
@@ -1409,18 +1438,12 @@
             else if (tipo === 'glitch') audio = document.getElementById('audio-glitch');
             else if (tipo === 'reveal') audio = document.getElementById('audio-reveal');
             else if (tipo === 'rating') audio = document.getElementById('audio-rating');
-            if (audio) {
-                audio.currentTime = 0;
-                audio.volume = 0.5;
-                audio.play().catch(function(e) { console.log('Audio:', e); });
-            }
+            if (audio) { audio.currentTime = 0; audio.volume = 0.5; audio.play().catch(function(e) { console.log('Audio:', e); }); }
         }
 
         function mostrarPantalla(id) {
             var containers = document.querySelectorAll('.container');
-            for (var i = 0; i < containers.length; i++) {
-                containers[i].classList.add('hidden');
-            }
+            for (var i = 0; i < containers.length; i++) { containers[i].classList.add('hidden'); }
             document.getElementById(id).classList.remove('hidden');
             if (id === 'pantalla-perfiles') renderizarPerfiles();
             else if (id === 'pantalla-capitulos') renderizarCapitulos();
@@ -1464,26 +1487,15 @@
 
         function guardarUsuario() {
             var nombre = document.getElementById('nombre-usuario').value.trim();
-            if (nombre) {
-                localStorage.setItem(CONFIG.claveUsuario, nombre);
-                tocarSonido('click');
-                iniciarBootSequence(nombre);
-            } else {
-                alert('Ingresa un identificador');
-                tocarSonido('error');
-            }
+            if (nombre) { localStorage.setItem(CONFIG.claveUsuario, nombre); tocarSonido('click'); iniciarBootSequence(nombre); }
+            else { alert('Ingresa un identificador'); tocarSonido('error'); }
         }
 
         function iniciarBootSequence(nombre) {
             mostrarPantalla('pantalla-carga');
             var bootText = document.getElementById('boot-text');
             tocarSonido('unlock');
-            var lineas = [
-                'ARCHIVO RAVEN\'S RIDGE - Secure Boot Sequence Initiated...',
-                'Loading core modules...', 'Checking integrity...',
-                'Status: All systems nominal', 'Establishing secure connection...',
-                'Welcome back, ' + nombre, 'Access granted.<span class="blink">_</span>'
-            ];
+            var lineas = ['ARCHIVO RAVEN\'S RIDGE - Secure Boot Sequence Initiated...', 'Loading core modules...', 'Checking integrity...', 'Status: All systems nominal', 'Establishing secure connection...', 'Welcome back, ' + nombre, 'Access granted.<span class="blink">_</span>'];
             var i = 0;
             var intervalo = setInterval(function() {
                 if (i < lineas.length) {
@@ -1493,134 +1505,40 @@
                     linea.innerHTML = '> ' + lineas[i];
                     bootText.appendChild(linea);
                     i++;
-                } else {
-                    clearInterval(intervalo);
-                    setTimeout(function() { mostrarDashboard(nombre); }, 1500);
-                }
+                } else { clearInterval(intervalo); setTimeout(function() { mostrarDashboard(nombre); }, 1500); }
             }, 500);
         }
 
-        function mostrarDashboard(nombre) {
-            mostrarPantalla('pantalla-dashboard');
-            document.getElementById('nombre-display').textContent = nombre;
-        }
-
-        function cerrarSesion() {
-            localStorage.removeItem(CONFIG.claveUsuario);
-            location.reload();
-        }
-
+        function mostrarDashboard(nombre) { mostrarPantalla('pantalla-dashboard'); document.getElementById('nombre-display').textContent = nombre; }
+        function cerrarSesion() { localStorage.removeItem(CONFIG.claveUsuario); location.reload(); }
         function mostrarMensaje(msg) { alert(msg); }
-
         function resetearTodo() {
-            if (confirm('¿ESTÁS SEGURO? Esto borrará TODO tu progreso.')) {
-                localStorage.clear();
-                alert('Reset completado. La página se recargará.');
-                location.reload();
-            }
+            if (confirm('¿ESTÁS SEGURO? Esto borrará TODO tu progreso.')) { localStorage.clear(); alert('Reset completado. La página se recargará.'); location.reload(); }
         }
 
-        function getProgreso() {
-            var guardado = localStorage.getItem(CONFIG.claveProgreso);
-            if (guardado) return JSON.parse(guardado);
-            return { tomo1: { completados: [], epilogue: false }, tomo2: { completados: [], epilogue: false, extra: false } };
-        }
-
-        function guardarProgreso(progreso) {
-            localStorage.setItem(CONFIG.claveProgreso, JSON.stringify(progreso));
-        }
-
-        function getCalificaciones() {
-            var guardado = localStorage.getItem(CONFIG.claveCalificaciones);
-            if (guardado) return JSON.parse(guardado);
-            return {};
-        }
-
-        function guardarCalificaciones(calificaciones) {
-            localStorage.setItem(CONFIG.claveCalificaciones, JSON.stringify(calificaciones));
-        }
-
-        function getTablero() {
-            var guardado = localStorage.getItem(CONFIG.claveTablero);
-            if (guardado) return JSON.parse(guardado);
-            return { evidencias: [] };
-        }
-
-        function guardarTablero(tablero) {
-            localStorage.setItem(CONFIG.claveTablero, JSON.stringify(tablero));
-        }
-
-        function getCulpable() {
-            var guardado = localStorage.getItem(CONFIG.claveCulpable);
-            if (guardado) return JSON.parse(guardado);
-            return { culpable: null, sospechosos: [], bloqueado: false };
-        }
-
-        function guardarCulpable(culpableData) {
-            localStorage.setItem(CONFIG.claveCulpable, JSON.stringify(culpableData));
-        }
-
-        function getEvidenciasPerfiles() {
-            var guardado = localStorage.getItem(CONFIG.claveEvidenciasPerfiles);
-            if (guardado) return JSON.parse(guardado);
-            return {};
-        }
-
-        function guardarEvidenciasPerfiles(evidencias) {
-            localStorage.setItem(CONFIG.claveEvidenciasPerfiles, JSON.stringify(evidencias));
-        }
-
-        function getDiario() {
-            var guardado = localStorage.getItem(CONFIG.claveDiario);
-            if (guardado) return JSON.parse(guardado);
-            return {};
-        }
-
-        function guardarDiarioEntrada(capituloId, contenido) {
-            var diario = getDiario();
-            diario[capituloId] = contenido;
-            localStorage.setItem(CONFIG.claveDiario, JSON.stringify(diario));
-        }
+        function getProgreso() { var g = localStorage.getItem(CONFIG.claveProgreso); return g ? JSON.parse(g) : { tomo1: { completados: [], epilogue: false }, tomo2: { completados: [], epilogue: false, extra: false } }; }
+        function guardarProgreso(p) { localStorage.setItem(CONFIG.claveProgreso, JSON.stringify(p)); }
+        function getCalificaciones() { var g = localStorage.getItem(CONFIG.claveCalificaciones); return g ? JSON.parse(g) : {}; }
+        function guardarCalificaciones(c) { localStorage.setItem(CONFIG.claveCalificaciones, JSON.stringify(c)); }
+        function getTablero() { var g = localStorage.getItem(CONFIG.claveTablero); return g ? JSON.parse(g) : { evidencias: [] }; }
+        function guardarTablero(t) { localStorage.setItem(CONFIG.claveTablero, JSON.stringify(t)); }
+        function getCulpable() { var g = localStorage.getItem(CONFIG.claveCulpable); return g ? JSON.parse(g) : { culpable: null, sospechosos: [], bloqueado: false }; }
+        function guardarCulpable(c) { localStorage.setItem(CONFIG.claveCulpable, JSON.stringify(c)); }
+        function getEvidenciasPerfiles() { var g = localStorage.getItem(CONFIG.claveEvidenciasPerfiles); return g ? JSON.parse(g) : {}; }
+        function guardarEvidenciasPerfiles(e) { localStorage.setItem(CONFIG.claveEvidenciasPerfiles, JSON.stringify(e)); }
+        function getDiario() { var g = localStorage.getItem(CONFIG.claveDiario); return g ? JSON.parse(g) : {}; }
+        function guardarDiarioEntrada(cid, contenido) { var d = getDiario(); d[cid] = contenido; localStorage.setItem(CONFIG.claveDiario, JSON.stringify(d)); }
 
         function marcarCapitulo(tomo, cap) {
-            var progreso = getProgreso();
-            var tomoKey = 'tomo' + tomo;
-            if (cap === 'epilogue') {
-                if (!progreso[tomoKey].epilogue) {
-                    progreso[tomoKey].epilogue = true;
-                    tocarSonido('tomo');
-                } else {
-                    progreso[tomoKey].epilogue = false;
-                    tocarSonido('click');
-                }
-            } else if (cap === 'extra') {
-                if (!progreso[tomoKey].extra) {
-                    progreso[tomoKey].extra = true;
-                    tocarSonido('tomo');
-                    localStorage.setItem(CONFIG.claveNoirDesbloqueado, 'true');
-                    setTimeout(function() {
-                        mostrarRecompensaNoir();
-                        localStorage.setItem(CONFIG.claveNoirVisto, 'true');
-                    }, 500);
-                } else {
-                    progreso[tomoKey].extra = false;
-                    tocarSonido('click');
-                }
-            } else {
+            var progreso = getProgreso(), tomoKey = 'tomo' + tomo;
+            if (cap === 'epilogue') { if (!progreso[tomoKey].epilogue) { progreso[tomoKey].epilogue = true; tocarSonido('tomo'); } else { progreso[tomoKey].epilogue = false; tocarSonido('click'); } }
+            else if (cap === 'extra') { if (!progreso[tomoKey].extra) { progreso[tomoKey].extra = true; tocarSonido('tomo'); localStorage.setItem(CONFIG.claveNoirDesbloqueado, 'true'); setTimeout(function() { mostrarRecompensaNoir(); localStorage.setItem(CONFIG.claveNoirVisto, 'true'); }, 500); } else { progreso[tomoKey].extra = false; tocarSonido('click'); } }
+            else {
                 var index = progreso[tomoKey].completados.indexOf(cap);
-                if (index === -1) {
-                    progreso[tomoKey].completados.push(cap);
-                    tocarSonido('chapter');
-                    verificarDesbloqueos(tomo, cap);
-                    setTimeout(function() { abrirCalificacion(tomo, cap); }, 300);
-                } else {
-                    progreso[tomoKey].completados.splice(index, 1);
-                    tocarSonido('click');
-                }
+                if (index === -1) { progreso[tomoKey].completados.push(cap); tocarSonido('chapter'); verificarDesbloqueos(tomo, cap); setTimeout(function() { abrirCalificacion(tomo, cap); }, 300); }
+                else { progreso[tomoKey].completados.splice(index, 1); tocarSonido('click'); }
             }
-            guardarProgreso(progreso);
-            renderizarCapitulos();
-            actualizarProgresoGlobal();
+            guardarProgreso(progreso); renderizarCapitulos(); actualizarProgresoGlobal();
         }
 
         function verificarDesbloqueos(tomo, cap) {
@@ -1643,124 +1561,72 @@
             document.getElementById('progress-text').textContent = porcentaje + '% completado (' + completados + '/' + total + ')';
         }
 
-        function cambiarTomo(tomo) {
-            tomoActual = tomo;
-            var btns = document.querySelectorAll('.tomo-btn');
-            btns[0].classList.toggle('active', tomo === 1);
-            btns[1].classList.toggle('active', tomo === 2);
-            renderizarCapitulos();
-            tocarSonido('click');
-        }
+        function cambiarTomo(tomo) { tomoActual = tomo; var btns = document.querySelectorAll('.tomo-btn'); btns[0].classList.toggle('active', tomo === 1); btns[1].classList.toggle('active', tomo === 2); renderizarCapitulos(); tocarSonido('click'); }
 
         function renderizarCapitulos() {
-            var container = document.getElementById('capitulos-container');
-            container.innerHTML = '';
+            var container = document.getElementById('capitulos-container'); container.innerHTML = '';
             var tomoData = tomoActual === 1 ? CAPITULOS.tomo1 : CAPITULOS.tomo2;
-            var progreso = getProgreso();
-            var progresoTomo = tomoActual === 1 ? progreso.tomo1 : progreso.tomo2;
-            var calificaciones = getCalificaciones();
-            var diario = getDiario();
-            var section = document.createElement('div');
-            section.className = 'tomo-section';
+            var progreso = getProgreso(), progresoTomo = tomoActual === 1 ? progreso.tomo1 : progreso.tomo2;
+            var calificaciones = getCalificaciones(), diario = getDiario();
+            var section = document.createElement('div'); section.className = 'tomo-section';
             section.innerHTML = '<h3>TOMO ' + tomoActual + ': ' + tomoData.titulo + '</h3>';
-            var lista = document.createElement('div');
-            lista.className = 'capitulos-list';
+            var lista = document.createElement('div'); lista.className = 'capitulos-list';
             if (tomoData.prologo) {
-                var capId = 't' + tomoActual + '_p0';
-                var completado = progresoTomo.completados.indexOf(0) !== -1;
-                var tieneCalificacion = calificaciones[capId] ? true : false;
-                var tieneDiario = diario[capId] ? true : false;
-                var prologo = document.createElement('div');
-                prologo.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                var capId = 't' + tomoActual + '_p0', completado = progresoTomo.completados.indexOf(0) !== -1;
+                var tieneCalificacion = calificaciones[capId] ? true : false, tieneDiario = diario[capId] ? true : false;
+                var prologo = document.createElement('div'); prologo.className = 'capitulo-item special' + (completado ? ' completed' : '');
                 prologo.textContent = 'PRÓLOGO' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
-                prologo.onclick = function() { marcarCapitulo(tomoActual, 0); };
-                lista.appendChild(prologo);
+                prologo.onclick = function() { marcarCapitulo(tomoActual, 0); }; lista.appendChild(prologo);
             }
             for (var i = 1; i <= tomoData.capitulos; i++) {
-                var capId = 't' + tomoActual + '_c' + i;
-                var completado = progresoTomo.completados.indexOf(i) !== -1;
-                var tieneCalificacion = calificaciones[capId] ? true : false;
-                var tieneDiario = diario[capId] ? true : false;
-                var cap = document.createElement('div');
-                cap.className = 'capitulo-item' + (completado ? ' completed' : '');
+                var capId = 't' + tomoActual + '_c' + i, completado = progresoTomo.completados.indexOf(i) !== -1;
+                var tieneCalificacion = calificaciones[capId] ? true : false, tieneDiario = diario[capId] ? true : false;
+                var cap = document.createElement('div'); cap.className = 'capitulo-item' + (completado ? ' completed' : '');
                 cap.textContent = 'CAP. ' + i + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
-                cap.onclick = (function(num) { return function() { marcarCapitulo(tomoActual, num); }; })(i);
-                lista.appendChild(cap);
+                cap.onclick = (function(num) { return function() { marcarCapitulo(tomoActual, num); }; })(i); lista.appendChild(cap);
             }
             if (tomoData.epilogue) {
-                var capId = 't' + tomoActual + '_epi';
-                var completado = progresoTomo.epilogue;
-                var tieneCalificacion = calificaciones[capId] ? true : false;
-                var tieneDiario = diario[capId] ? true : false;
-                var epilogue = document.createElement('div');
-                epilogue.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                var capId = 't' + tomoActual + '_epi', completado = progresoTomo.epilogue;
+                var tieneCalificacion = calificaciones[capId] ? true : false, tieneDiario = diario[capId] ? true : false;
+                var epilogue = document.createElement('div'); epilogue.className = 'capitulo-item special' + (completado ? ' completed' : '');
                 epilogue.textContent = 'EPÍLOGO' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
-                epilogue.onclick = function() { marcarCapitulo(tomoActual, 'epilogue'); };
-                lista.appendChild(epilogue);
+                epilogue.onclick = function() { marcarCapitulo(tomoActual, 'epilogue'); }; lista.appendChild(epilogue);
             }
             if (tomoData.extra) {
-                var capId = 't' + tomoActual + '_extra';
-                var completado = progresoTomo.extra;
-                var tieneCalificacion = calificaciones[capId] ? true : false;
-                var tieneDiario = diario[capId] ? true : false;
-                var extra = document.createElement('div');
-                extra.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                var capId = 't' + tomoActual + '_extra', completado = progresoTomo.extra;
+                var tieneCalificacion = calificaciones[capId] ? true : false, tieneDiario = diario[capId] ? true : false;
+                var extra = document.createElement('div'); extra.className = 'capitulo-item special' + (completado ? ' completed' : '');
                 extra.textContent = 'ESCENA EXTRA' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
-                extra.onclick = function() { marcarCapitulo(tomoActual, 'extra'); };
-                lista.appendChild(extra);
+                extra.onclick = function() { marcarCapitulo(tomoActual, 'extra'); }; lista.appendChild(extra);
             }
-            section.appendChild(lista);
-            container.appendChild(section);
-            actualizarProgresoGlobal();
+            section.appendChild(lista); container.appendChild(section); actualizarProgresoGlobal();
         }
 
         function renderizarTablero() {
-            var progreso = getProgreso();
-            var culpableData = getCulpable();
-            var evidenciasPerfiles = getEvidenciasPerfiles();
-            var capitulosT2 = progreso.tomo2.completados.length;
-            var totalT2 = CAPITULOS.tomo2.capitulos;
+            var progreso = getProgreso(), culpableData = getCulpable(), evidenciasPerfiles = getEvidenciasPerfiles();
+            var capitulosT2 = progreso.tomo2.completados.length, totalT2 = CAPITULOS.tomo2.capitulos;
             var porcentajeT2 = Math.round((capitulosT2 / totalT2) * 100);
             document.getElementById('progreso-t2-texto').textContent = capitulosT2 + '/' + totalT2;
             document.getElementById('progreso-t2-barra').style.width = porcentajeT2 + '%';
-            if (capitulosT2 >= 22 && !culpableData.bloqueado) {
-                document.getElementById('mensaje-culpable').style.display = 'block';
-            }
-            document.getElementById('buscador-input').value = '';
-            document.getElementById('buscador-sugerencias').classList.add('hidden');
-            document.getElementById('buscador-resultado').classList.add('hidden');
-            var container = document.getElementById('evidencias-por-perfil-container');
-            container.innerHTML = '';
+            if (capitulosT2 >= 22 && !culpableData.bloqueado) { document.getElementById('mensaje-culpable').style.display = 'block'; }
+            document.getElementById('buscador-input').value = ''; document.getElementById('buscador-sugerencias').classList.add('hidden'); document.getElementById('buscador-resultado').classList.add('hidden');
+            var container = document.getElementById('evidencias-por-perfil-container'); container.innerHTML = '';
             CULPABLES_POSIBLES.forEach(function(culp) {
-                var perfilId = culp.id;
-                var evidencias = evidenciasPerfiles[perfilId] || [];
-                var perfilDiv = document.createElement('div');
-                perfilDiv.className = 'perfil-evidencia-container';
+                var perfilId = culp.id, evidencias = evidenciasPerfiles[perfilId] || [];
+                var perfilDiv = document.createElement('div'); perfilDiv.className = 'perfil-evidencia-container';
                 var headerHTML = '<div class="perfil-evidencia-header"><img src="' + CONFIG.rutaImagenes + culp.imagen + '" alt="' + culp.nombre + '"><div><h4>' + culp.nombre + '</h4><p class="evidencia-counter">' + evidencias.length + '/5 evidencias</p></div></div>';
                 var evidenciasHTML = '<div class="evidencia-lista-perfil">';
                 evidencias.forEach(function(ev, index) {
                     evidenciasHTML += '<div class="evidencia-item-perfil' + (ev.completado ? ' completed' : '') + '"><div class="evidencia-checkbox-perfil" onclick="toggleEvidenciaPerfil(\'' + perfilId + '\', ' + index + ')"></div><input type="text" class="evidencia-input-perfil" value="' + ev.texto + '" onchange="actualizarEvidenciaPerfil(\'' + perfilId + '\', ' + index + ', this.value)" ' + (culpableData.bloqueado ? 'disabled' : '') + '><button class="evidencia-delete-btn" onclick="eliminarEvidenciaPerfil(\'' + perfilId + '\', ' + index + ')" ' + (culpableData.bloqueado ? 'disabled style="opacity:0.5"' : '') + '>X</button></div>';
-                });
-                evidenciasHTML += '</div>';
-                if (!culpableData.bloqueado && evidencias.length < 5) {
-                    evidenciasHTML += '<button class="evidencia-add-btn-perfil" onclick="agregarEvidenciaPerfil(\'' + perfilId + '\')">+ AÑADIR EVIDENCIA</button>';
-                }
-                if (culpableData.bloqueado) {
-                    evidenciasHTML += '<p class="evidencia-bloqueado-msg">🔒 Evidencias bloqueadas - Culpable confirmado</p>';
-                }
-                perfilDiv.innerHTML = headerHTML + evidenciasHTML;
-                container.appendChild(perfilDiv);
+                }); evidenciasHTML += '</div>';
+                if (!culpableData.bloqueado && evidencias.length < 5) { evidenciasHTML += '<button class="evidencia-add-btn-perfil" onclick="agregarEvidenciaPerfil(\'' + perfilId + '\')">+ AÑADIR EVIDENCIA</button>'; }
+                if (culpableData.bloqueado) { evidenciasHTML += '<p class="evidencia-bloqueado-msg">🔒 Evidencias bloqueadas - Culpable confirmado</p>'; }
+                perfilDiv.innerHTML = headerHTML + evidenciasHTML; container.appendChild(perfilDiv);
             });
-            var culpableGrid = document.getElementById('culpable-grid');
-            culpableGrid.innerHTML = '';
+            var culpableGrid = document.getElementById('culpable-grid'); culpableGrid.innerHTML = '';
             CULPABLES_POSIBLES.forEach(function(culp) {
-                var card = document.createElement('div');
-                card.className = 'culpable-card';
-                if (culpableData.bloqueado) {
-                    card.classList.add('locked');
-                    if (culp.id === culpableData.culpable) { card.classList.add('selected-culpable'); }
-                    else if (culpableData.sospechosos.indexOf(culp.id) !== -1) { card.classList.add('selected-sospechoso'); }
-                }
+                var card = document.createElement('div'); card.className = 'culpable-card';
+                if (culpableData.bloqueado) { card.classList.add('locked'); if (culp.id === culpableData.culpable) { card.classList.add('selected-culpable'); } else if (culpableData.sospechosos.indexOf(culp.id) !== -1) { card.classList.add('selected-sospechoso'); } }
                 card.innerHTML = '<img src="' + CONFIG.rutaImagenes + culp.imagen + '" alt="' + culp.nombre + '"><h4>' + culp.nombre + '</h4>';
                 if (!culpableData.bloqueado) { card.onclick = function() { seleccionarCulpable(culp.id); }; }
                 culpableGrid.appendChild(card);
@@ -1771,217 +1637,88 @@
 
         function buscarSujeto() {
             var input = document.getElementById('buscador-input').value.toLowerCase();
-            var sugerenciasContainer = document.getElementById('buscador-sugerencias');
-            var resultadoContainer = document.getElementById('buscador-resultado');
-            var resultadoInfo = document.getElementById('buscador-info');
+            var sugerenciasContainer = document.getElementById('buscador-sugerencias'), resultadoContainer = document.getElementById('buscador-resultado'), resultadoInfo = document.getElementById('buscador-info');
             if (input.length < 2) { sugerenciasContainer.classList.add('hidden'); resultadoContainer.classList.add('hidden'); return; }
             var coincidencias = PERFILES.filter(function(p) { return p.nombre.toLowerCase().includes(input) && !p.esNoir; });
             if (coincidencias.length > 0) {
-                sugerenciasContainer.innerHTML = '';
-                coincidencias.forEach(function(p) {
-                    var item = document.createElement('div');
-                    item.className = 'sugerencia-item';
+                sugerenciasContainer.innerHTML = ''; coincidencias.forEach(function(p) {
+                    var item = document.createElement('div'); item.className = 'sugerencia-item';
                     item.textContent = p.nombre + ' - ' + p.rol;
                     item.onclick = function() { document.getElementById('buscador-input').value = p.nombre; sugerenciasContainer.classList.add('hidden'); resultadoContainer.classList.remove('hidden'); resultadoInfo.textContent = p.nombre + ': ' + p.descripcion; };
                     sugerenciasContainer.appendChild(item);
-                });
-                sugerenciasContainer.classList.remove('hidden');
+                }); sugerenciasContainer.classList.remove('hidden');
             } else { sugerenciasContainer.classList.add('hidden'); }
         }
 
-        function agregarEvidenciaPerfil(perfilId) {
-            var evidencias = getEvidenciasPerfiles();
-            if (!evidencias[perfilId]) { evidencias[perfilId] = []; }
-            if (evidencias[perfilId].length >= 5) { alert('Máximo 5 evidencias por perfil'); return; }
-            evidencias[perfilId].push({ texto: '', completado: false });
-            guardarEvidenciasPerfiles(evidencias);
-            renderizarTablero();
-            tocarSonido('click');
-        }
-
-        function toggleEvidenciaPerfil(perfilId, index) {
-            var evidencias = getEvidenciasPerfiles();
-            if (evidencias[perfilId] && evidencias[perfilId][index]) {
-                evidencias[perfilId][index].completado = !evidencias[perfilId][index].completado;
-                guardarEvidenciasPerfiles(evidencias);
-                renderizarTablero();
-                tocarSonido('click');
-            }
-        }
-
-        function actualizarEvidenciaPerfil(perfilId, index, valor) {
-            var evidencias = getEvidenciasPerfiles();
-            if (evidencias[perfilId] && evidencias[perfilId][index]) {
-                evidencias[perfilId][index].texto = valor;
-                guardarEvidenciasPerfiles(evidencias);
-            }
-        }
-
-        function eliminarEvidenciaPerfil(perfilId, index) {
-            var evidencias = getEvidenciasPerfiles();
-            if (evidencias[perfilId]) { evidencias[perfilId].splice(index, 1); guardarEvidenciasPerfiles(evidencias); renderizarTablero(); tocarSonido('click'); }
-        }
+        function agregarEvidenciaPerfil(perfilId) { var e = getEvidenciasPerfiles(); if (!e[perfilId]) { e[perfilId] = []; } if (e[perfilId].length >= 5) { alert('Máximo 5 evidencias por perfil'); return; } e[perfilId].push({ texto: '', completado: false }); guardarEvidenciasPerfiles(e); renderizarTablero(); tocarSonido('click'); }
+        function toggleEvidenciaPerfil(perfilId, index) { var e = getEvidenciasPerfiles(); if (e[perfilId] && e[perfilId][index]) { e[perfilId][index].completado = !e[perfilId][index].completado; guardarEvidenciasPerfiles(e); renderizarTablero(); tocarSonido('click'); } }
+        function actualizarEvidenciaPerfil(perfilId, index, valor) { var e = getEvidenciasPerfiles(); if (e[perfilId] && e[perfilId][index]) { e[perfilId][index].texto = valor; guardarEvidenciasPerfiles(e); } }
+        function eliminarEvidenciaPerfil(perfilId, index) { var e = getEvidenciasPerfiles(); if (e[perfilId]) { e[perfilId].splice(index, 1); guardarEvidenciasPerfiles(e); renderizarTablero(); tocarSonido('click'); } }
 
         function seleccionarCulpable(id) {
-            var culpableData = getCulpable();
-            if (culpableData.bloqueado) { return; }
-            if (culpableData.culpable === null) {
-                culpableData.culpable = id;
-                guardarCulpable(culpableData);
-                tocarSonido('reveal');
-                alert('⚠️ Has seleccionado a ' + CULPABLES_POSIBLES.find(c => c.id === id).nombre + ' como CULPABLE.\n\nPuedes añadir hasta 2 SOSPECHOSOS adicionales.\n\nHaz click en el culpable de nuevo para CONFIRMAR.');
-            } else if (culpableData.culpable === id) {
-                culpableData.bloqueado = true;
-                guardarCulpable(culpableData);
-                tocarSonido('reveal');
-                alert('✅ Selección CONFIRMADA. Las evidencias se han bloqueado. Esto es PERMANENTE.');
-            } else if (culpableData.sospechosos.length < 2 && culpableData.sospechosos.indexOf(id) === -1) {
-                culpableData.sospechosos.push(id);
-                guardarCulpable(culpableData);
-                tocarSonido('click');
-            } else if (culpableData.sospechosos.indexOf(id) !== -1) {
-                culpableData.sospechosos.splice(culpableData.sospechosos.indexOf(id), 1);
-                guardarCulpable(culpableData);
-                tocarSonido('click');
-            }
+            var culpableData = getCulpable(); if (culpableData.bloqueado) { return; }
+            if (culpableData.culpable === null) { culpableData.culpable = id; guardarCulpable(culpableData); tocarSonido('reveal'); alert('⚠️ Has seleccionado a ' + CULPABLES_POSIBLES.find(c => c.id === id).nombre + ' como CULPABLE.\n\nPuedes añadir hasta 2 SOSPECHOSOS adicionales.\n\nHaz click en el culpable de nuevo para CONFIRMAR.'); }
+            else if (culpableData.culpable === id) { culpableData.bloqueado = true; guardarCulpable(culpableData); tocarSonido('reveal'); alert('✅ Selección CONFIRMADA. Las evidencias se han bloqueado. Esto es PERMANENTE.'); }
+            else if (culpableData.sospechosos.length < 2 && culpableData.sospechosos.indexOf(id) === -1) { culpableData.sospechosos.push(id); guardarCulpable(culpableData); tocarSonido('click'); }
+            else if (culpableData.sospechosos.indexOf(id) !== -1) { culpableData.sospechosos.splice(culpableData.sospechosos.indexOf(id), 1); guardarCulpable(culpableData); tocarSonido('click'); }
             renderizarTablero();
         }
 
         function mostrarPopupSistema(mensaje) {
             if (document.getElementById('popup-overlay')) { document.getElementById('popup-overlay').remove(); }
             if (document.getElementById('popup-sistema')) { document.getElementById('popup-sistema').remove(); }
-            var overlay = document.createElement('div');
-            overlay.id = 'popup-overlay';
-            overlay.className = 'popup-overlay';
-            var popup = document.createElement('div');
-            popup.id = 'popup-sistema';
-            popup.className = 'popup-sistema';
+            var overlay = document.createElement('div'); overlay.id = 'popup-overlay'; overlay.className = 'popup-overlay';
+            var popup = document.createElement('div'); popup.id = 'popup-sistema'; popup.className = 'popup-sistema';
             popup.innerHTML = '<h2 style="color: var(--blue-neon); margin-bottom: 20px; font-size: 16px;">⚠️ SISTEMA</h2><p style="color: var(--green-matrix); margin-bottom: 25px; line-height: 1.8; white-space: pre-line; font-size: 13px;">' + mensaje + '</p><button id="popup-cerrar-btn" style="width: auto; padding: 10px 30px; font-size: 12px; border-color: var(--green-matrix); color: var(--green-matrix);">ENTENDIDO</button>';
-            document.body.appendChild(overlay);
-            document.body.appendChild(popup);
-            document.getElementById('popup-cerrar-btn').addEventListener('click', function() {
-                if (document.getElementById('popup-overlay')) { document.getElementById('popup-overlay').remove(); }
-                if (document.getElementById('popup-sistema')) { document.getElementById('popup-sistema').remove(); }
-            });
+            document.body.appendChild(overlay); document.body.appendChild(popup);
+            document.getElementById('popup-cerrar-btn').addEventListener('click', function() { if (document.getElementById('popup-overlay')) { document.getElementById('popup-overlay').remove(); } if (document.getElementById('popup-sistema')) { document.getElementById('popup-sistema').remove(); } });
             tocarSonido('unlock');
         }
 
         function mostrarMensajeFinal() {
-            var mensajeVisto = localStorage.getItem(CONFIG.claveMensajeFinalVisto);
-            if (mensajeVisto === 'true') return;
-            var culpableData = getCulpable();
-            var usuario = localStorage.getItem(CONFIG.claveUsuario);
+            var mensajeVisto = localStorage.getItem(CONFIG.claveMensajeFinalVisto); if (mensajeVisto === 'true') return;
+            var culpableData = getCulpable(), usuario = localStorage.getItem(CONFIG.claveUsuario);
             var acerto = culpableData.culpable && CULPABLES_REALES.indexOf(culpableData.culpable) !== -1;
             var contenido = document.getElementById('mensaje-final-contenido');
             contenido.innerHTML = '<p>Estado: COMPLETADO</p><p>Investigador: ' + usuario + '</p><br><p>En Raven\'s Ridge, el precio de la misericordia se paga con ojos y lenguas, con sangre y cenizas. Y tú... escogiste pagar para seguir el rastro hasta el final.</p><br>' + (acerto ? '<p class="acierto">Sabías que era Ainsley (Mente Maestra), Eliott (Ejecutor) y Bridget (Peón) desde el principio.</p>' : '<p class="fallo">El amor te cegó..., como a todos.<br>No te preocupes, algunos secretos se guardan para proteger.<br>Otros... para sobrevivir.</p>') + '<br><p>— Archivo Raven\'s Ridge, CERRADO —</p><br><p>Continúa hasta el final. Hay algo para ti.</p>';
-            document.getElementById('mensaje-final-modal').classList.remove('hidden');
-            localStorage.setItem(CONFIG.claveMensajeFinalVisto, 'true');
-            tocarSonido('reveal');
+            document.getElementById('mensaje-final-modal').classList.remove('hidden'); localStorage.setItem(CONFIG.claveMensajeFinalVisto, 'true'); tocarSonido('reveal');
         }
-
-        function cerrarMensajeFinal() {
-            document.getElementById('mensaje-final-modal').classList.add('hidden');
-            tocarSonido('click');
-        }
+        function cerrarMensajeFinal() { document.getElementById('mensaje-final-modal').classList.add('hidden'); tocarSonido('click'); }
 
         function abrirCalificacion(tomo, cap) {
             var capId = 't' + tomo + '_' + (cap === 'epilogue' ? 'epi' : cap === 'extra' ? 'extra' : cap === 0 ? 'p0' : 'c' + cap);
-            var calificaciones = getCalificaciones();
-            var calificacionExistente = calificaciones[capId];
-            capituloActualCalificacion = capId;
-            calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 };
+            var calificaciones = getCalificaciones(), calificacionExistente = calificaciones[capId];
+            capituloActualCalificacion = capId; calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 };
             if (calificacionExistente) { calificacionTemporal = calificacionExistente; }
             var tituloCap = cap === 0 ? 'PRÓLOGO' : cap === 'epilogue' ? 'EPÍLOGO' : cap === 'extra' ? 'ESCENA EXTRA' : 'CAP. ' + cap;
             document.getElementById('rating-capitulo-titulo').textContent = 'TOMO ' + tomo + ' - ' + tituloCap;
-            actualizarEstrellasVisuales('calidad', calificacionTemporal.calidad);
-            actualizarEstrellasVisuales('spicy', calificacionTemporal.spicy);
-            actualizarEstrellasVisuales('misterio', calificacionTemporal.misterio);
-            configurarListenersEstrellas('calidad');
-            configurarListenersEstrellas('spicy');
-            configurarListenersEstrellas('misterio');
-            document.getElementById('rating-modal').classList.remove('hidden');
-            tocarSonido('unlock');
+            actualizarEstrellasVisuales('calidad', calificacionTemporal.calidad); actualizarEstrellasVisuales('spicy', calificacionTemporal.spicy); actualizarEstrellasVisuales('misterio', calificacionTemporal.misterio);
+            configurarListenersEstrellas('calidad'); configurarListenersEstrellas('spicy'); configurarListenersEstrellas('misterio');
+            document.getElementById('rating-modal').classList.remove('hidden'); tocarSonido('unlock');
         }
-
         function configurarListenersEstrellas(categoria) {
-            var container = document.getElementById(categoria + '-stars');
-            var buttons = container.querySelectorAll('.star-btn');
+            var container = document.getElementById(categoria + '-stars'), buttons = container.querySelectorAll('.star-btn');
             buttons.forEach(function(btn) {
-                var newBtn = btn.cloneNode(true);
-                btn.parentNode.replaceChild(newBtn, btn);
-                newBtn.addEventListener('click', function() {
-                    var value = parseInt(this.getAttribute('data-value'));
-                    calificacionTemporal[categoria] = value;
-                    actualizarEstrellasVisuales(categoria, value);
-                    tocarSonido('rating');
-                });
-                newBtn.addEventListener('mouseenter', function() {
-                    var value = parseInt(this.getAttribute('data-value'));
-                    resaltarEstrellas(categoria, value);
-                });
-                newBtn.addEventListener('mouseleave', function() {
-                    actualizarEstrellasVisuales(categoria, calificacionTemporal[categoria]);
-                });
+                var newBtn = btn.cloneNode(true); btn.parentNode.replaceChild(newBtn, btn);
+                newBtn.addEventListener('click', function() { var value = parseInt(this.getAttribute('data-value')); calificacionTemporal[categoria] = value; actualizarEstrellasVisuales(categoria, value); tocarSonido('rating'); });
+                newBtn.addEventListener('mouseenter', function() { var value = parseInt(this.getAttribute('data-value')); resaltarEstrellas(categoria, value); });
+                newBtn.addEventListener('mouseleave', function() { actualizarEstrellasVisuales(categoria, calificacionTemporal[categoria]); });
             });
         }
-
-        function resaltarEstrellas(categoria, hasta) {
-            var container = document.getElementById(categoria + '-stars');
-            var buttons = container.querySelectorAll('.star-btn');
-            buttons.forEach(function(btn, index) {
-                if (index < hasta) { btn.textContent = '★'; btn.style.color = 'var(--blue-neon)'; }
-                else { btn.textContent = '☆'; btn.style.color = 'var(--green-matrix)'; }
-            });
-        }
-
-        function actualizarEstrellasVisuales(categoria, valor) {
-            var container = document.getElementById(categoria + '-stars');
-            var buttons = container.querySelectorAll('.star-btn');
-            buttons.forEach(function(btn, index) {
-                if (index < valor) { btn.textContent = '★'; btn.style.color = 'var(--blue-neon)'; btn.classList.add('active'); setTimeout(function() { btn.classList.remove('active'); }, 300); }
-                else { btn.textContent = '☆'; btn.style.color = 'var(--green-matrix)'; }
-            });
-        }
-
-        function guardarCalificacion() {
-            if (!capituloActualCalificacion) return;
-            var calificaciones = getCalificaciones();
-            calificaciones[capituloActualCalificacion] = calificacionTemporal;
-            guardarCalificaciones(calificaciones);
-            cerrarCalificacion();
-            renderizarCapitulos();
-            tocarSonido('chapter');
-        }
-
-        function cerrarCalificacion() {
-            document.getElementById('rating-modal').classList.add('hidden');
-            capituloActualCalificacion = null;
-            calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 };
-        }
-
-        function tieneCapitulo(progreso, tomo, cap) {
-            if (tomo === 1) { return progreso.tomo1.completados.indexOf(cap) !== -1; }
-            else { return progreso.tomo2.completados.indexOf(cap) !== -1; }
-        }
+        function resaltarEstrellas(categoria, hasta) { var container = document.getElementById(categoria + '-stars'), buttons = container.querySelectorAll('.star-btn'); buttons.forEach(function(btn, index) { if (index < hasta) { btn.textContent = '★'; btn.style.color = 'var(--blue-neon)'; } else { btn.textContent = '☆'; btn.style.color = 'var(--green-matrix)'; } }); }
+        function actualizarEstrellasVisuales(categoria, valor) { var container = document.getElementById(categoria + '-stars'), buttons = container.querySelectorAll('.star-btn'); buttons.forEach(function(btn, index) { if (index < valor) { btn.textContent = '★'; btn.style.color = 'var(--blue-neon)'; btn.classList.add('active'); setTimeout(function() { btn.classList.remove('active'); }, 300); } else { btn.textContent = '☆'; btn.style.color = 'var(--green-matrix)'; } }); }
+        function guardarCalificacion() { if (!capituloActualCalificacion) return; var calificaciones = getCalificaciones(); calificaciones[capituloActualCalificacion] = calificacionTemporal; guardarCalificaciones(calificaciones); cerrarCalificacion(); renderizarCapitulos(); tocarSonido('chapter'); }
+        function cerrarCalificacion() { document.getElementById('rating-modal').classList.add('hidden'); capituloActualCalificacion = null; calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 }; }
+        function tieneCapitulo(progreso, tomo, cap) { if (tomo === 1) { return progreso.tomo1.completados.indexOf(cap) !== -1; } else { return progreso.tomo2.completados.indexOf(cap) !== -1; } }
 
         function renderizarPerfiles() {
-            var grid = document.getElementById('profiles-grid');
-            grid.innerHTML = '';
-            var noirDesbloqueado = localStorage.getItem(CONFIG.claveNoirDesbloqueado) === 'true';
-            var progreso = getProgreso();
+            var grid = document.getElementById('profiles-grid'); grid.innerHTML = '';
+            var noirDesbloqueado = localStorage.getItem(CONFIG.claveNoirDesbloqueado) === 'true', progreso = getProgreso();
             for (var i = 0; i < PERFILES.length; i++) {
-                var p = PERFILES[i];
-                if (p.esNoir && !noirDesbloqueado) continue;
-                var imagen = obtenerImagenPerfil(p, progreso);
-                var bloqueado = p.bloqueado && !p.esNoir;
-                var card = document.createElement('div');
-                card.className = 'profile-card' + (bloqueado ? ' locked' : '');
-                (function(perfil, imgSrc) {
-                    card.onclick = function() {
-                        if (!bloqueado) { tocarSonido('click'); abrirPerfil(perfil.id, imgSrc, progreso); }
-                        else { tocarSonido('error'); }
-                    };
-                })(p, imagen);
+                var p = PERFILES[i]; if (p.esNoir && !noirDesbloqueado) continue;
+                var imagen = obtenerImagenPerfil(p, progreso), bloqueado = p.bloqueado && !p.esNoir;
+                var card = document.createElement('div'); card.className = 'profile-card' + (bloqueado ? ' locked' : '');
+                (function(perfil, imgSrc) { card.onclick = function() { if (!bloqueado) { tocarSonido('click'); abrirPerfil(perfil.id, imgSrc, progreso); } else { tocarSonido('error'); } }; })(p, imagen);
                 card.innerHTML = '<div class="status-indicator"></div><div class="image-container"><img src="' + imagen + '" alt="' + p.nombre + '"></div><h3>' + p.nombre + '</h3><p>' + p.rol + '</p>' + (bloqueado ? '<p style="color: var(--red-blood); margin-top: 10px;">BLOQUEADO</p>' : '');
                 grid.appendChild(card);
             }
@@ -1991,141 +1728,31 @@
             if (perfil.esNoir) return CONFIG.rutaImagenes + perfil.imagen;
             if (perfil.id === 'PERFIL_00_MORWYN') return CONFIG.rutaImagenes + perfil.imagen;
             if (perfil.id === 'PERFIL_07_HARLAN') return CONFIG.rutaImagenes + perfil.imagen;
-            if (perfil.id === 'PERFIL_04_CASSIDY') {
-                if (tieneCapitulo(progreso, 2, 16)) return CONFIG.rutaImagenes + perfil.imagenFinal;
-                if (tieneCapitulo(progreso, 2, 14)) return CONFIG.rutaImagenes + perfil.imagenGlitch;
-                return CONFIG.rutaImagenes + perfil.imagen;
-            }
-            if (perfil.id === 'PERFIL_03_AINSLEY') {
-                if (tieneCapitulo(progreso, 2, 26)) return CONFIG.rutaImagenes + perfil.imagenFinal;
-                return CONFIG.rutaImagenes + perfil.imagen;
-            }
-            if (perfil.id === 'PERFIL_05_ELIOTT' || perfil.id === 'PERFIL_06_BRIDGET') {
-                if (tieneCapitulo(progreso, 2, 27)) return CONFIG.rutaImagenes + perfil.imagenFinal;
-                return CONFIG.rutaImagenes + perfil.imagen;
-            }
-            if (perfil.id === 'PERFIL_01_DRAKE' || perfil.id === 'PERFIL_02_KILLIAN') {
-                if (progreso.tomo2.epilogue) return CONFIG.rutaImagenes + perfil.imagenFinal;
-                return CONFIG.rutaImagenes + perfil.imagen;
-            }
+            if (perfil.id === 'PERFIL_04_CASSIDY') { if (tieneCapitulo(progreso, 2, 16)) return CONFIG.rutaImagenes + perfil.imagenFinal; if (tieneCapitulo(progreso, 2, 14)) return CONFIG.rutaImagenes + perfil.imagenGlitch; return CONFIG.rutaImagenes + perfil.imagen; }
+            if (perfil.id === 'PERFIL_03_AINSLEY') { if (tieneCapitulo(progreso, 2, 26)) return CONFIG.rutaImagenes + perfil.imagenFinal; return CONFIG.rutaImagenes + perfil.imagen; }
+            if (perfil.id === 'PERFIL_05_ELIOTT' || perfil.id === 'PERFIL_06_BRIDGET') { if (tieneCapitulo(progreso, 2, 27)) return CONFIG.rutaImagenes + perfil.imagenFinal; return CONFIG.rutaImagenes + perfil.imagen; }
+            if (perfil.id === 'PERFIL_01_DRAKE' || perfil.id === 'PERFIL_02_KILLIAN') { if (progreso.tomo2.epilogue) return CONFIG.rutaImagenes + perfil.imagenFinal; return CONFIG.rutaImagenes + perfil.imagen; }
             return CONFIG.rutaImagenes + perfil.imagen;
         }
 
         function abrirPerfil(id, imagenSrc, progreso) {
-            morwynRevelado = false;
-            harlanRevelado = false;
-            for (var i = 0; i < PERFILES.length; i++) {
-                if (PERFILES[i].id === id) { perfilActual = PERFILES[i]; break; }
-            }
+            morwynRevelado = false; harlanRevelado = false;
+            for (var i = 0; i < PERFILES.length; i++) { if (PERFILES[i].id === id) { perfilActual = PERFILES[i]; break; } }
             if (!perfilActual) return;
-            document.getElementById('detalle-nombre').textContent = perfilActual.nombre;
-            document.getElementById('detalle-nombre-completo').textContent = perfilActual.nombre;
-            document.getElementById('detalle-rol').textContent = perfilActual.rol;
-            var imageContainer = document.getElementById('detalle-image-container');
-            var detalleImg = document.getElementById('detalle-imagen');
-            var flipHint = document.getElementById('flip-hint');
-            var revealMsg = document.getElementById('reveal-message');
-            var estadoDiv = document.getElementById('detalle-estado');
-            var descripcionDiv = document.getElementById('detalle-descripcion');
-            imageContainer.classList.remove('reveal-ready');
-            imageContainer.classList.remove('cassidy-glitch');
-            flipHint.classList.add('hidden');
-            revealMsg.classList.add('hidden');
-            revealMsg.textContent = '';
-            imageContainer.onclick = null;
-            estadoDiv.textContent = 'ACTIVO';
-            estadoDiv.classList.remove('fixed');
-            if (perfilActual.id === 'PERFIL_04_CASSIDY') {
-                if (tieneCapitulo(progreso, 2, 14) && !tieneCapitulo(progreso, 2, 16)) { imageContainer.classList.add('cassidy-glitch'); detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenGlitch; estadoDiv.textContent = 'DESAPARECIDA'; estadoDiv.classList.add('fixed'); }
-                else if (tieneCapitulo(progreso, 2, 16)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'MUERTA'; estadoDiv.classList.add('fixed'); }
-                else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVA'; estadoDiv.classList.remove('fixed'); }
-                descripcionDiv.textContent = perfilActual.descripcion;
-            }
-            else if (perfilActual.id === 'PERFIL_00_MORWYN' && perfilActual.tieneRevelacion) {
-                var puedeRevelar = tieneCapitulo(progreso, 2, 26);
-                if (puedeRevelar) {
-                    imageContainer.classList.add('reveal-ready');
-                    flipHint.classList.remove('hidden');
-                    imageContainer.onclick = function() {
-                        if (!morwynRevelado) {
-                            morwynRevelado = true;
-                            detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenRevelada;
-                            tocarSonido('reveal');
-                            revealMsg.textContent = 'ALIAS CONFIRMADO - SUJETO: AINSLEY MACALLISTER';
-                            revealMsg.classList.remove('hidden');
-                            estadoDiv.textContent = 'ALIAS CONFIRMADO: AINSLEY';
-                            estadoDiv.classList.add('fixed');
-                            flipHint.classList.add('hidden');
-                            imageContainer.classList.remove('reveal-ready');
-                        }
-                    };
-                }
-                detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen;
-                descripcionDiv.textContent = perfilActual.descripcion;
-            }
-            else if (perfilActual.id === 'PERFIL_07_HARLAN' && perfilActual.tieneRevelacion) {
-                var puedeRevelar = tieneCapitulo(progreso, 2, 6);
-                if (puedeRevelar) {
-                    imageContainer.classList.add('reveal-ready');
-                    flipHint.classList.remove('hidden');
-                    flipHint.textContent = 'Click para revelar identidad';
-                    imageContainer.onclick = function() {
-                        if (!harlanRevelado) {
-                            harlanRevelado = true;
-                            detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenRevelada;
-                            tocarSonido('reveal');
-                            revealMsg.textContent = 'IDENTIDAD REVELADA: MICAH LANCASTER';
-                            revealMsg.classList.remove('hidden');
-                            estadoDiv.textContent = 'ENCUBIERTO';
-                            estadoDiv.classList.add('fixed');
-                            flipHint.classList.add('hidden');
-                            imageContainer.classList.remove('reveal-ready');
-                        }
-                    };
-                }
-                detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen;
-                var descripcionBase = perfilActual.descripcion;
-                if (harlanRevelado && perfilActual.descripcionSecreta) { descripcionBase += perfilActual.descripcionSecreta; }
-                descripcionDiv.textContent = descripcionBase;
-            }
-            else if (perfilActual.id === 'PERFIL_03_AINSLEY') {
-                if (tieneCapitulo(progreso, 2, 26)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'MENTE MAESTRA'; estadoDiv.classList.add('fixed'); revealMsg.textContent = 'IDENTIDAD REVELADA - MORWYN SHADE'; revealMsg.classList.remove('hidden'); }
-                else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVA'; estadoDiv.classList.remove('fixed'); }
-                descripcionDiv.textContent = perfilActual.descripcion;
-            }
-            else if (perfilActual.id === 'PERFIL_05_ELIOTT') {
-                if (tieneCapitulo(progreso, 2, 27)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'EJECUTOR'; estadoDiv.classList.add('fixed'); }
-                else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVO'; estadoDiv.classList.remove('fixed'); }
-                descripcionDiv.textContent = perfilActual.descripcion;
-            }
-            else if (perfilActual.id === 'PERFIL_06_BRIDGET') {
-                if (tieneCapitulo(progreso, 2, 27)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'PEÓN'; estadoDiv.classList.add('fixed'); }
-                else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVA'; estadoDiv.classList.remove('fixed'); }
-                descripcionDiv.textContent = perfilActual.descripcion;
-            }
-            else if (perfilActual.id === 'PERFIL_01_DRAKE' || perfilActual.id === 'PERFIL_02_KILLIAN') {
-                if (progreso.tomo2.epilogue) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; }
-                else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; }
-                estadoDiv.textContent = 'ACTIVO';
-                estadoDiv.classList.remove('fixed');
-                descripcionDiv.textContent = perfilActual.descripcion;
-            }
-            else if (perfilActual.esNoir) {
-                detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen;
-                estadoDiv.textContent = 'BLOQUEADO';
-                estadoDiv.classList.add('fixed');
-                descripcionDiv.textContent = perfilActual.descripcion;
-            }
-            else {
-                if (perfilActual.imagen && perfilActual.imagen.includes('.mp4')) { detalleImg.outerHTML = '<video id="detalle-imagen" src="' + CONFIG.rutaImagenes + perfilActual.imagen + '" muted autoplay loop style="max-width:100%; max-height:100%; object-fit:contain;"></video>'; }
-                else { detalleImg.src = imagenSrc || CONFIG.rutaImagenes + perfilActual.imagen; }
-                descripcionDiv.textContent = perfilActual.descripcion;
-            }
-            var tagsSection = document.getElementById('tags-section');
-            var tagFijo = document.getElementById('detalle-tag-fijo');
-            var selectEtiquetas = document.getElementById('etiquetas-select');
-            var tieneEtiquetaFija = false;
-            var etiquetaFijaValor = null;
+            document.getElementById('detalle-nombre').textContent = perfilActual.nombre; document.getElementById('detalle-nombre-completo').textContent = perfilActual.nombre; document.getElementById('detalle-rol').textContent = perfilActual.rol;
+            var imageContainer = document.getElementById('detalle-image-container'), detalleImg = document.getElementById('detalle-imagen'), flipHint = document.getElementById('flip-hint'), revealMsg = document.getElementById('reveal-message'), estadoDiv = document.getElementById('detalle-estado'), descripcionDiv = document.getElementById('detalle-descripcion');
+            imageContainer.classList.remove('reveal-ready'); imageContainer.classList.remove('cassidy-glitch'); flipHint.classList.add('hidden'); revealMsg.classList.add('hidden'); revealMsg.textContent = ''; imageContainer.onclick = null; estadoDiv.textContent = 'ACTIVO'; estadoDiv.classList.remove('fixed');
+            if (perfilActual.id === 'PERFIL_04_CASSIDY') { if (tieneCapitulo(progreso, 2, 14) && !tieneCapitulo(progreso, 2, 16)) { imageContainer.classList.add('cassidy-glitch'); detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenGlitch; estadoDiv.textContent = 'DESAPARECIDA'; estadoDiv.classList.add('fixed'); } else if (tieneCapitulo(progreso, 2, 16)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'MUERTA'; estadoDiv.classList.add('fixed'); } else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVA'; estadoDiv.classList.remove('fixed'); } descripcionDiv.textContent = perfilActual.descripcion; }
+            else if (perfilActual.id === 'PERFIL_00_MORWYN' && perfilActual.tieneRevelacion) { var puedeRevelar = tieneCapitulo(progreso, 2, 26); if (puedeRevelar) { imageContainer.classList.add('reveal-ready'); flipHint.classList.remove('hidden'); imageContainer.onclick = function() { if (!morwynRevelado) { morwynRevelado = true; detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenRevelada; tocarSonido('reveal'); revealMsg.textContent = 'ALIAS CONFIRMADO - SUJETO: AINSLEY MACALLISTER'; revealMsg.classList.remove('hidden'); estadoDiv.textContent = 'ALIAS CONFIRMADO: AINSLEY'; estadoDiv.classList.add('fixed'); flipHint.classList.add('hidden'); imageContainer.classList.remove('reveal-ready'); } }; } detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; descripcionDiv.textContent = perfilActual.descripcion; }
+            else if (perfilActual.id === 'PERFIL_07_HARLAN' && perfilActual.tieneRevelacion) { var puedeRevelar = tieneCapitulo(progreso, 2, 6); if (puedeRevelar) { imageContainer.classList.add('reveal-ready'); flipHint.classList.remove('hidden'); flipHint.textContent = 'Click para revelar identidad'; imageContainer.onclick = function() { if (!harlanRevelado) { harlanRevelado = true; detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenRevelada; tocarSonido('reveal'); revealMsg.textContent = 'IDENTIDAD REVELADA: MICAH LANCASTER'; revealMsg.classList.remove('hidden'); estadoDiv.textContent = 'ENCUBIERTO'; estadoDiv.classList.add('fixed'); flipHint.classList.add('hidden'); imageContainer.classList.remove('reveal-ready'); } }; } detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; var descripcionBase = perfilActual.descripcion; if (harlanRevelado && perfilActual.descripcionSecreta) { descripcionBase += perfilActual.descripcionSecreta; } descripcionDiv.textContent = descripcionBase; }
+            else if (perfilActual.id === 'PERFIL_03_AINSLEY') { if (tieneCapitulo(progreso, 2, 26)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'MENTE MAESTRA'; estadoDiv.classList.add('fixed'); revealMsg.textContent = 'IDENTIDAD REVELADA - MORWYN SHADE'; revealMsg.classList.remove('hidden'); } else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVA'; estadoDiv.classList.remove('fixed'); } descripcionDiv.textContent = perfilActual.descripcion; }
+            else if (perfilActual.id === 'PERFIL_05_ELIOTT') { if (tieneCapitulo(progreso, 2, 27)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'EJECUTOR'; estadoDiv.classList.add('fixed'); } else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVO'; estadoDiv.classList.remove('fixed'); } descripcionDiv.textContent = perfilActual.descripcion; }
+            else if (perfilActual.id === 'PERFIL_06_BRIDGET') { if (tieneCapitulo(progreso, 2, 27)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'PEÓN'; estadoDiv.classList.add('fixed'); } else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVA'; estadoDiv.classList.remove('fixed'); } descripcionDiv.textContent = perfilActual.descripcion; }
+            else if (perfilActual.id === 'PERFIL_01_DRAKE' || perfilActual.id === 'PERFIL_02_KILLIAN') { if (progreso.tomo2.epilogue) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; } else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; } estadoDiv.textContent = 'ACTIVO'; estadoDiv.classList.remove('fixed'); descripcionDiv.textContent = perfilActual.descripcion; }
+            else if (perfilActual.esNoir) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'BLOQUEADO'; estadoDiv.classList.add('fixed'); descripcionDiv.textContent = perfilActual.descripcion; }
+            else { if (perfilActual.imagen && perfilActual.imagen.includes('.mp4')) { detalleImg.outerHTML = '<video id="detalle-imagen" src="' + CONFIG.rutaImagenes + perfilActual.imagen + '" muted autoplay loop style="max-width:100%; max-height:100%; object-fit:contain;"></video>'; } else { detalleImg.src = imagenSrc || CONFIG.rutaImagenes + perfilActual.imagen; } descripcionDiv.textContent = perfilActual.descripcion; }
+            var tagsSection = document.getElementById('tags-section'), tagFijo = document.getElementById('detalle-tag-fijo'), selectEtiquetas = document.getElementById('etiquetas-select');
+            var tieneEtiquetaFija = false, etiquetaFijaValor = null;
             if (perfilActual.id === 'PERFIL_04_CASSIDY' && tieneCapitulo(progreso, 2, 16)) { tieneEtiquetaFija = true; etiquetaFijaValor = 'MUERTA'; }
             else if (perfilActual.id === 'PERFIL_05_ELIOTT' && tieneCapitulo(progreso, 2, 27)) { tieneEtiquetaFija = true; etiquetaFijaValor = 'EJECUTOR'; }
             else if (perfilActual.id === 'PERFIL_06_BRIDGET' && tieneCapitulo(progreso, 2, 27)) { tieneEtiquetaFija = true; etiquetaFijaValor = 'PEÓN'; }
@@ -2135,174 +1762,90 @@
             else if (perfilActual.etiquetaFija) { tieneEtiquetaFija = true; etiquetaFijaValor = perfilActual.etiquetaFija; }
             if (tieneEtiquetaFija) { tagsSection.classList.add('hidden'); tagFijo.classList.remove('hidden'); tagFijo.textContent = etiquetaFijaValor; }
             else if (!perfilActual.editable) { tagsSection.classList.add('hidden'); tagFijo.classList.add('hidden'); }
-            else {
-                tagsSection.classList.remove('hidden');
-                tagFijo.classList.add('hidden');
-                var guardadas = localStorage.getItem('rr_etiquetas_' + perfilActual.id);
-                var etiquetasGuardadas = guardadas ? JSON.parse(guardadas) : [];
-                for (var j = 0; j < selectEtiquetas.options.length; j++) { selectEtiquetas.options[j].selected = (etiquetasGuardadas.indexOf(selectEtiquetas.options[j].value) !== -1); }
-                actualizarSeleccionadas();
-            }
-            var notas = localStorage.getItem('rr_notas_' + perfilActual.id) || '';
-            document.getElementById('detalle-notas').value = notas;
-            mostrarPantalla('pantalla-perfil-detalle');
-            tocarSonido('unlock');
+            else { tagsSection.classList.remove('hidden'); tagFijo.classList.add('hidden'); var guardadas = localStorage.getItem('rr_etiquetas_' + perfilActual.id); var etiquetasGuardadas = guardadas ? JSON.parse(guardadas) : []; for (var j = 0; j < selectEtiquetas.options.length; j++) { selectEtiquetas.options[j].selected = (etiquetasGuardadas.indexOf(selectEtiquetas.options[j].value) !== -1); } actualizarSeleccionadas(); }
+            var notas = localStorage.getItem('rr_notas_' + perfilActual.id) || ''; document.getElementById('detalle-notas').value = notas;
+            mostrarPantalla('pantalla-perfil-detalle'); tocarSonido('unlock');
         }
 
-        function actualizarSeleccionadas() {
-            var select = document.getElementById('etiquetas-select');
-            var container = document.getElementById('tags-seleccionadas');
-            container.innerHTML = '';
-            var seleccionadas = [];
-            for (var i = 0; i < select.options.length; i++) { if (select.options[i].selected) seleccionadas.push(select.options[i].value); }
-            if (seleccionadas.length === 0) { container.innerHTML = '<span style="color: var(--green-matrix); font-size: 10px;">Sin etiquetas seleccionadas</span>'; return; }
-            for (var i = 0; i < seleccionadas.length; i++) {
-                var tagId = seleccionadas[i];
-                var tagLabel = ETIQUETAS_MAP[tagId] || tagId;
-                var tagItem = document.createElement('span');
-                tagItem.className = 'tag-item';
-                tagItem.innerHTML = tagLabel + ' <span class="remove-tag" onclick="removerEtiqueta(\'' + tagId + '\')">x</span>';
-                container.appendChild(tagItem);
-            }
-        }
+        function actualizarSeleccionadas() { var select = document.getElementById('etiquetas-select'), container = document.getElementById('tags-seleccionadas'); container.innerHTML = ''; var seleccionadas = []; for (var i = 0; i < select.options.length; i++) { if (select.options[i].selected) seleccionadas.push(select.options[i].value); } if (seleccionadas.length === 0) { container.innerHTML = '<span style="color: var(--green-matrix); font-size: 10px;">Sin etiquetas seleccionadas</span>'; return; } for (var i = 0; i < seleccionadas.length; i++) { var tagId = seleccionadas[i], tagLabel = ETIQUETAS_MAP[tagId] || tagId, tagItem = document.createElement('span'); tagItem.className = 'tag-item'; tagItem.innerHTML = tagLabel + ' <span class="remove-tag" onclick="removerEtiqueta(\'' + tagId + '\')">x</span>'; container.appendChild(tagItem); } }
+        function removerEtiqueta(id) { var select = document.getElementById('etiquetas-select'); for (var i = 0; i < select.options.length; i++) { if (select.options[i].value === id) { select.options[i].selected = false; break; } } tocarSonido('click'); actualizarSeleccionadas(); }
+        function guardarYVolver() { var tagsSection = document.getElementById('tags-section'); if (!tagsSection.classList.contains('hidden') && perfilActual && perfilActual.editable) { var select = document.getElementById('etiquetas-select'), seleccionadas = []; for (var i = 0; i < select.options.length; i++) { if (select.options[i].selected) seleccionadas.push(select.options[i].value); } localStorage.setItem('rr_etiquetas_' + perfilActual.id, JSON.stringify(seleccionadas)); } if (perfilActual) { var notas = document.getElementById('detalle-notas').value; localStorage.setItem('rr_notas_' + perfilActual.id, notas); } tocarSonido('click'); mostrarPantalla('pantalla-perfiles'); }
+        function mostrarRecompensaNoir() { tocarSonido('noir'); setTimeout(function() { tocarSonido('celebration'); }, 1000); document.getElementById('pantalla-noir-reward').classList.remove('hidden'); }
+        function cerrarNoirReward() { document.getElementById('pantalla-noir-reward').classList.add('hidden'); tocarSonido('click'); }
 
-        function removerEtiqueta(id) {
-            var select = document.getElementById('etiquetas-select');
-            for (var i = 0; i < select.options.length; i++) { if (select.options[i].value === id) { select.options[i].selected = false; break; } }
-            tocarSonido('click');
-            actualizarSeleccionadas();
-        }
-
-        function guardarYVolver() {
-            var tagsSection = document.getElementById('tags-section');
-            if (!tagsSection.classList.contains('hidden') && perfilActual && perfilActual.editable) {
-                var select = document.getElementById('etiquetas-select');
-                var seleccionadas = [];
-                for (var i = 0; i < select.options.length; i++) { if (select.options[i].selected) seleccionadas.push(select.options[i].value); }
-                localStorage.setItem('rr_etiquetas_' + perfilActual.id, JSON.stringify(seleccionadas));
-            }
-            if (perfilActual) { var notas = document.getElementById('detalle-notas').value; localStorage.setItem('rr_notas_' + perfilActual.id, notas); }
-            tocarSonido('click');
-            mostrarPantalla('pantalla-perfiles');
-        }
-
-        function mostrarRecompensaNoir() {
-            tocarSonido('noir');
-            setTimeout(function() { tocarSonido('celebration'); }, 1000);
-            document.getElementById('pantalla-noir-reward').classList.remove('hidden');
-        }
-
-        function cerrarNoirReward() {
-            document.getElementById('pantalla-noir-reward').classList.add('hidden');
-            tocarSonido('click');
-        }
-
-        function renderizarDiario() {
-            document.getElementById('diario-capitulo-seleccionado').textContent = 'Ninguno';
-            document.getElementById('diario-editor').innerHTML = '';
-            capituloDiarioActual = null;
-            renderizarCapitulosDiario();
-        }
-
-        function cambiarTomoDiario(tomo) {
-            tomoDiarioActual = tomo;
-            var btns = document.querySelectorAll('#pantalla-diario .tomo-btn');
-            btns[0].classList.toggle('active', tomo === 1);
-            btns[1].classList.toggle('active', tomo === 2);
-            renderizarCapitulosDiario();
-            tocarSonido('click');
-        }
+        // DIARIO HACKER
+        function renderizarDiario() { document.getElementById('diario-capitulo-seleccionado').textContent = 'Ninguno'; document.getElementById('diario-editor').innerHTML = ''; capituloDiarioActual = null; renderizarCapitulosDiario(); }
+        function cambiarTomoDiario(tomo) { tomoDiarioActual = tomo; var btns = document.querySelectorAll('#pantalla-diario .tomo-btn'); btns[0].classList.toggle('active', tomo === 1); btns[1].classList.toggle('active', tomo === 2); renderizarCapitulosDiario(); tocarSonido('click'); }
 
         function renderizarCapitulosDiario() {
-            var container = document.getElementById('diario-capitulos-lista');
-            container.innerHTML = '';
+            var container = document.getElementById('diario-capitulos-lista'); container.innerHTML = '';
             var tomoData = tomoDiarioActual === 1 ? CAPITULOS.tomo1 : CAPITULOS.tomo2;
-            var progreso = getProgreso();
-            var progresoTomo = tomoDiarioActual === 1 ? progreso.tomo1 : progreso.tomo2;
-            var diario = getDiario();
+            var progreso = getProgreso(), progresoTomo = tomoDiarioActual === 1 ? progreso.tomo1 : progreso.tomo2;
+            var diario = getDiario(), filtro = document.getElementById('diario-buscador-input') ? document.getElementById('diario-buscador-input').value.toLowerCase() : '';
             if (tomoData.prologo) {
-                var capId = 't' + tomoDiarioActual + '_p0';
-                var completado = progresoTomo.completados.indexOf(0) !== -1;
-                var tieneEntrada = diario[capId] ? true : false;
-                var cap = document.createElement('div');
-                cap.className = 'capitulo-item special' + (completado ? ' completed' : '');
-                cap.textContent = 'PRÓLOGO' + (tieneEntrada ? ' 📝' : '');
-                cap.style.opacity = completado ? '1' : '0.5';
-                cap.style.cursor = completado ? 'pointer' : 'not-allowed';
-                if (completado) { cap.onclick = function() { seleccionarCapituloDiario(tomoDiarioActual, 0); }; }
-                container.appendChild(cap);
+                var capId = 't' + tomoDiarioActual + '_p0', completado = progresoTomo.completados.indexOf(0) !== -1, tieneEntrada = diario[capId] ? true : false;
+                var textoCap = 'PRÓLOGO' + (tieneEntrada ? ' 📝' : '');
+                if (filtro === '' || textoCap.toLowerCase().includes(filtro)) {
+                    var cap = document.createElement('div'); cap.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                    cap.textContent = textoCap; cap.style.opacity = completado ? '1' : '0.5'; cap.style.cursor = completado ? 'pointer' : 'not-allowed';
+                    if (completado) { cap.onclick = function() { seleccionarCapituloDiario(tomoDiarioActual, 0); }; }
+                    container.appendChild(cap);
+                }
             }
             for (var i = 1; i <= tomoData.capitulos; i++) {
-                var capId = 't' + tomoDiarioActual + '_c' + i;
-                var completado = progresoTomo.completados.indexOf(i) !== -1;
-                var tieneEntrada = diario[capId] ? true : false;
-                var cap = document.createElement('div');
-                cap.className = 'capitulo-item' + (completado ? ' completed' : '');
-                cap.textContent = 'CAP. ' + i + (tieneEntrada ? ' 📝' : '');
-                cap.style.opacity = completado ? '1' : '0.5';
-                cap.style.cursor = completado ? 'pointer' : 'not-allowed';
-                if (completado) { cap.onclick = (function(num) { return function() { seleccionarCapituloDiario(tomoDiarioActual, num); }; })(i); }
-                container.appendChild(cap);
+                var capId = 't' + tomoDiarioActual + '_c' + i, completado = progresoTomo.completados.indexOf(i) !== -1, tieneEntrada = diario[capId] ? true : false;
+                var textoCap = 'CAP. ' + i + (tieneEntrada ? ' 📝' : '');
+                if (filtro === '' || textoCap.toLowerCase().includes(filtro) || i.toString().includes(filtro)) {
+                    var cap = document.createElement('div'); cap.className = 'capitulo-item' + (completado ? ' completed' : '');
+                    cap.textContent = textoCap; cap.style.opacity = completado ? '1' : '0.5'; cap.style.cursor = completado ? 'pointer' : 'not-allowed';
+                    if (completado) { cap.onclick = (function(num) { return function() { seleccionarCapituloDiario(tomoDiarioActual, num); }; })(i); }
+                    container.appendChild(cap);
+                }
             }
             if (tomoData.epilogue) {
-                var capId = 't' + tomoDiarioActual + '_epi';
-                var completado = progresoTomo.epilogue;
-                var tieneEntrada = diario[capId] ? true : false;
-                var cap = document.createElement('div');
-                cap.className = 'capitulo-item special' + (completado ? ' completed' : '');
-                cap.textContent = 'EPÍLOGO' + (tieneEntrada ? ' 📝' : '');
-                cap.style.opacity = completado ? '1' : '0.5';
-                cap.style.cursor = completado ? 'pointer' : 'not-allowed';
-                if (completado) { cap.onclick = function() { seleccionarCapituloDiario(tomoDiarioActual, 'epilogue'); }; }
-                container.appendChild(cap);
+                var capId = 't' + tomoDiarioActual + '_epi', completado = progresoTomo.epilogue, tieneEntrada = diario[capId] ? true : false;
+                var textoCap = 'EPÍLOGO' + (tieneEntrada ? ' 📝' : '');
+                if (filtro === '' || textoCap.toLowerCase().includes(filtro)) {
+                    var cap = document.createElement('div'); cap.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                    cap.textContent = textoCap; cap.style.opacity = completado ? '1' : '0.5'; cap.style.cursor = completado ? 'pointer' : 'not-allowed';
+                    if (completado) { cap.onclick = function() { seleccionarCapituloDiario(tomoDiarioActual, 'epilogue'); }; }
+                    container.appendChild(cap);
+                }
             }
             if (tomoData.extra) {
-                var capId = 't' + tomoDiarioActual + '_extra';
-                var completado = progresoTomo.extra;
-                var tieneEntrada = diario[capId] ? true : false;
-                var cap = document.createElement('div');
-                cap.className = 'capitulo-item special' + (completado ? ' completed' : '');
-                cap.textContent = 'EXTRA' + (tieneEntrada ? ' 📝' : '');
-                cap.style.opacity = completado ? '1' : '0.5';
-                cap.style.cursor = completado ? 'pointer' : 'not-allowed';
-                if (completado) { cap.onclick = function() { seleccionarCapituloDiario(tomoDiarioActual, 'extra'); }; }
-                container.appendChild(cap);
+                var capId = 't' + tomoDiarioActual + '_extra', completado = progresoTomo.extra, tieneEntrada = diario[capId] ? true : false;
+                var textoCap = 'EXTRA' + (tieneEntrada ? ' 📝' : '');
+                if (filtro === '' || textoCap.toLowerCase().includes(filtro)) {
+                    var cap = document.createElement('div'); cap.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                    cap.textContent = textoCap; cap.style.opacity = completado ? '1' : '0.5'; cap.style.cursor = completado ? 'pointer' : 'not-allowed';
+                    if (completado) { cap.onclick = function() { seleccionarCapituloDiario(tomoDiarioActual, 'extra'); }; }
+                    container.appendChild(cap);
+                }
             }
         }
+
+        function filtrarCapitulosDiario() { renderizarCapitulosDiario(); }
 
         function seleccionarCapituloDiario(tomo, cap) {
             var capId = 't' + tomo + '_' + (cap === 'epilogue' ? 'epi' : cap === 'extra' ? 'extra' : cap === 0 ? 'p0' : 'c' + cap);
             capituloDiarioActual = capId;
             var tituloCap = cap === 0 ? 'PRÓLOGO' : cap === 'epilogue' ? 'EPÍLOGO' : cap === 'extra' ? 'ESCENA EXTRA' : 'CAP. ' + cap;
             document.getElementById('diario-capitulo-seleccionado').textContent = 'TOMO ' + tomo + ' - ' + tituloCap;
-            var diario = getDiario();
-            var contenido = diario[capId] || '';
+            var diario = getDiario(), contenido = diario[capId] || '';
             document.getElementById('diario-editor').innerHTML = contenido;
             document.getElementById('diario-guardado-indicador').classList.add('hidden');
             tocarSonido('unlock');
         }
 
-        function formatoDiario(comando) {
-            document.execCommand(comando, false, null);
-            document.getElementById('diario-editor').focus();
-            tocarSonido('click');
-        }
-
-        function limpiarFormatoDiario() {
-            document.execCommand('removeFormat', false, null);
-            document.getElementById('diario-editor').focus();
-            tocarSonido('click');
-        }
-
+        function formatoDiario(comando) { document.execCommand(comando, false, null); document.getElementById('diario-editor').focus(); tocarSonido('click'); }
+        function limpiarFormatoDiario() { document.execCommand('removeFormat', false, null); document.getElementById('diario-editor').focus(); tocarSonido('click'); }
         function guardarDiario() {
             if (!capituloDiarioActual) { alert('⚠️ Selecciona un capítulo primero'); return; }
             var contenido = document.getElementById('diario-editor').innerHTML;
             guardarDiarioEntrada(capituloDiarioActual, contenido);
-            var indicador = document.getElementById('diario-guardado-indicador');
-            indicador.classList.remove('hidden');
+            var indicador = document.getElementById('diario-guardado-indicador'); indicador.classList.remove('hidden');
             setTimeout(function() { indicador.classList.add('hidden'); }, 3000);
-            renderizarCapitulosDiario();
-            tocarSonido('chapter');
+            renderizarCapitulosDiario(); tocarSonido('chapter');
         }
     </script>
 </body>
