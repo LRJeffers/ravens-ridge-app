@@ -1,0 +1,2309 @@
+<!DOCTYPE html>
+<html lang="es-419">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Archivo Raven's Ridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #000000;
+            --red-blood: #8B0000;
+            --blue-neon: #00FFFF;
+            --green-matrix: #00FF41;
+            --font-main: 'Share Tech Mono', monospace;
+            --font-code: 'Fira Code', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--green-matrix);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            border: 2px solid var(--green-matrix);
+            padding: 30px;
+            box-shadow: 0 0 20px var(--green-matrix);
+            position: relative;
+            background: #050505;
+        }
+        .container::before {
+            content: 'ARCHIVO RAVEN'S RIDGE';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--bg-color);
+            padding: 0 10px;
+            color: var(--blue-neon);
+            font-family: var(--font-code);
+            font-size: 14px;
+        }
+        h1 {
+            color: var(--blue-neon);
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px var(--blue-neon);
+            font-size: 24px;
+        }
+        h2 {
+            color: var(--green-matrix);
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        .input-group { margin-bottom: 20px; }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--green-matrix);
+            font-family: var(--font-code);
+            font-size: 14px;
+        }
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 15px;
+            background: #0a0a0a;
+            border: 1px solid var(--green-matrix);
+            color: var(--green-matrix);
+            font-family: var(--font-code);
+            font-size: 16px;
+            outline: none;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--blue-neon);
+            box-shadow: 0 0 10px var(--blue-neon);
+        }
+        textarea { min-height: 100px; resize: vertical; }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 2px solid var(--blue-neon);
+            color: var(--blue-neon);
+            font-family: var(--font-main);
+            font-size: 18px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: var(--blue-neon);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px var(--blue-neon);
+        }
+        .error-message {
+            color: var(--red-blood);
+            text-align: center;
+            margin-top: 15px;
+            font-family: var(--font-code);
+            font-size: 14px;
+        }
+        .hidden { display: none !important; }
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 65, 0.05) 51%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .boot-text {
+            font-family: var(--font-code);
+            font-size: 12px;
+            line-height: 1.8;
+            color: var(--green-matrix);
+        }
+        .boot-line { opacity: 0; animation: fadeIn 0.5s forwards; }
+        @keyframes fadeIn { to { opacity: 1; } }
+        .blink { animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .welcome-text {
+            color: var(--blue-neon);
+            font-size: 18px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .status-text {
+            font-size: 12px;
+            text-align: center;
+            color: var(--green-matrix);
+        }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .profile-card {
+            border: 2px solid var(--green-matrix);
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #050505;
+            position: relative;
+        }
+        .profile-card:hover {
+            border-color: var(--blue-neon);
+            box-shadow: 0 0 15px var(--blue-neon);
+            transform: translateY(-5px);
+        }
+        .profile-card.locked {
+            border-color: var(--red-blood);
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .profile-card.locked:hover {
+            transform: none;
+            box-shadow: 0 0 10px var(--red-blood);
+        }
+        .profile-card .image-container {
+            width: 100%;
+            height: 200px;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            border: 1px solid var(--green-matrix);
+            overflow: hidden;
+        }
+        .profile-card img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .profile-card h3 {
+            color: var(--blue-neon);
+            font-size: 16px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .profile-card p {
+            color: var(--green-matrix);
+            font-size: 12px;
+            text-align: center;
+            font-family: var(--font-code);
+        }
+        .profile-card .status-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--green-matrix);
+            box-shadow: 0 0 5px var(--green-matrix);
+        }
+        .profile-card.locked .status-indicator {
+            background: var(--red-blood);
+            box-shadow: 0 0 5px var(--red-blood);
+        }
+        .profile-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 768px) {
+            .profile-detail { grid-template-columns: 1fr; }
+        }
+        .profile-detail .image-section { text-align: center; }
+        .profile-detail .image-container {
+            width: 100%;
+            height: 350px;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--green-matrix);
+            margin-bottom: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        .profile-detail img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+        .profile-detail .image-container.reveal-ready:hover img {
+            transform: scale(1.05);
+        }
+        .profile-detail .image-container.reveal-ready::after {
+            content: 'CLICK PARA REVELAR';
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--red-blood);
+            color: #fff;
+            padding: 5px 15px;
+            font-size: 10px;
+            font-family: var(--font-code);
+            border: 1px solid #fff;
+        }
+        .profile-detail .image-container.cassidy-glitch img {
+            animation: cassidy-glitch 3s infinite;
+            filter: grayscale(100%);
+        }
+        @keyframes cassidy-glitch {
+            0% { filter: grayscale(100%); transform: translate(0); }
+            20% { filter: grayscale(100%) hue-rotate(90deg); transform: translate(-2px, 2px); }
+            40% { filter: grayscale(100%) hue-rotate(-90deg); transform: translate(2px, -2px); }
+            60% { filter: grayscale(100%); transform: translate(0); }
+            80% { filter: grayscale(100%) hue-rotate(90deg); transform: translate(-2px, 2px); }
+            100% { filter: grayscale(100%); transform: translate(0); }
+        }
+        .profile-detail .role {
+            color: var(--green-matrix);
+            font-family: var(--font-code);
+            font-size: 14px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid var(--green-matrix);
+            background: #0a0a0a;
+        }
+        .profile-detail .description {
+            font-family: var(--font-code);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--blue-neon);
+            background: #050505;
+        }
+        .tag-display {
+            display: inline-block;
+            padding: 5px 15px;
+            border: 1px solid var(--blue-neon);
+            color: var(--blue-neon);
+            font-family: var(--font-code);
+            font-size: 12px;
+            margin-top: 10px;
+            background: #0a0a0a;
+        }
+        .tag-display.fixed {
+            border-color: var(--red-blood);
+            color: var(--red-blood);
+        }
+        .tags-selected {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px dashed var(--blue-neon);
+            background: #0a0a0a;
+            min-height: 40px;
+        }
+        .tags-selected h4 {
+            color: var(--blue-neon);
+            font-size: 11px;
+            margin-bottom: 8px;
+            font-family: var(--font-code);
+        }
+        .tag-item {
+            display: inline-block;
+            padding: 4px 10px;
+            border: 1px solid var(--blue-neon);
+            color: var(--blue-neon);
+            font-family: var(--font-code);
+            font-size: 10px;
+            margin: 3px;
+            background: #050505;
+        }
+        .tag-item .remove-tag {
+            margin-left: 6px;
+            cursor: pointer;
+            color: var(--red-blood);
+            font-weight: bold;
+        }
+        .tag-item .remove-tag:hover { color: var(--blue-neon); }
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--green-matrix);
+        }
+        .top-nav h1 { margin: 0; text-align: left; }
+        .nav-links { display: flex; gap: 15px; }
+        .nav-links button {
+            width: auto;
+            padding: 10px 20px;
+            font-size: 14px;
+            margin: 0;
+        }
+        .back-btn {
+            border-color: var(--green-matrix);
+            color: var(--green-matrix);
+        }
+        .back-btn:hover {
+            background: var(--green-matrix);
+            color: var(--bg-color);
+        }
+        .noir-reward {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            text-align: center;
+        }
+        .noir-reward video {
+            max-width: 80%;
+            max-height: 50vh;
+            border: 3px solid var(--blue-neon);
+            box-shadow: 0 0 30px var(--blue-neon);
+            margin-bottom: 30px;
+        }
+        .noir-reward h1 {
+            color: var(--blue-neon);
+            font-size: 28px;
+            margin-bottom: 20px;
+            animation: glow 2s infinite;
+        }
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px var(--blue-neon); }
+            50% { text-shadow: 0 0 30px var(--blue-neon), 0 0 50px var(--blue-neon); }
+        }
+        .noir-reward p {
+            color: var(--green-matrix);
+            font-size: 16px;
+            max-width: 600px;
+            margin-bottom: 30px;
+            font-family: var(--font-code);
+        }
+        .noir-reward .download-btn {
+            background: var(--blue-neon);
+            color: var(--bg-color);
+            border: none;
+            padding: 20px 40px;
+            font-size: 20px;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 10px var(--blue-neon); }
+            50% { box-shadow: 0 0 30px var(--blue-neon), 0 0 50px var(--blue-neon); }
+        }
+        .noir-reward .close-btn {
+            margin-top: 20px;
+            background: transparent;
+            border: 2px solid var(--red-blood);
+            color: var(--red-blood);
+            width: auto;
+            padding: 10px 30px;
+        }
+        .noir-reward .close-btn:hover {
+            background: var(--red-blood);
+            color: var(--bg-color);
+        }
+        .tomo-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .tomo-btn {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid var(--green-matrix);
+            background: #0a0a0a;
+            color: var(--green-matrix);
+            font-family: var(--font-main);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tomo-btn:hover {
+            border-color: var(--blue-neon);
+            color: var(--blue-neon);
+        }
+        .tomo-btn.active {
+            background: var(--green-matrix);
+            color: var(--bg-color);
+            border-color: var(--green-matrix);
+        }
+        .capitulos-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .capitulo-item {
+            border: 1px solid var(--green-matrix);
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #050505;
+            font-family: var(--font-code);
+            font-size: 12px;
+        }
+        .capitulo-item:hover {
+            border-color: var(--blue-neon);
+            background: #0a0a0a;
+        }
+        .capitulo-item.completed {
+            background: var(--green-matrix);
+            color: var(--bg-color);
+            border-color: var(--green-matrix);
+        }
+        .capitulo-item.completed:hover {
+            background: var(--blue-neon);
+            border-color: var(--blue-neon);
+        }
+        .capitulo-item.special {
+            border-color: var(--blue-neon);
+            color: var(--blue-neon);
+        }
+        .progress-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid var(--green-matrix);
+            background: #0a0a0a;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #050505;
+            border: 1px solid var(--green-matrix);
+            margin-top: 10px;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--green-matrix);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px var(--green-matrix);
+        }
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-family: var(--font-code);
+            font-size: 14px;
+        }
+        .tomo-section {
+            margin-bottom: 40px;
+        }
+        .tomo-section h3 {
+            color: var(--blue-neon);
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 1px solid var(--green-matrix);
+            padding-bottom: 10px;
+        }
+        .reveal-message {
+            background: var(--red-blood);
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            font-family: var(--font-code);
+            margin-top: 15px;
+            border: 2px solid #fff;
+            animation: pulse-reveal 2s infinite;
+        }
+        @keyframes pulse-reveal {
+            0%, 100% { box-shadow: 0 0 10px var(--red-blood); }
+            50% { box-shadow: 0 0 30px var(--red-blood); }
+        }
+        .flip-hint {
+            text-align: center;
+            color: var(--blue-neon);
+            font-size: 11px;
+            margin-top: 10px;
+            font-family: var(--font-code);
+        }
+        .reset-btn {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: auto;
+            padding: 5px 10px;
+            font-size: 10px;
+            opacity: 0.3;
+            border-color: var(--blue-neon);
+            color: var(--blue-neon);
+        }
+        .reset-btn:hover { opacity: 1; }
+        .rating-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .rating-content {
+            background: #050505;
+            border: 2px solid var(--blue-neon);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 30px var(--blue-neon);
+        }
+        .rating-content h2 {
+            color: var(--blue-neon);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .rating-category {
+            margin-bottom: 25px;
+        }
+        .rating-category h3 {
+            color: var(--green-matrix);
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-family: var(--font-code);
+        }
+        .stars-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .star-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 28px;
+            padding: 5px;
+            transition: all 0.2s ease;
+            width: auto;
+            margin: 0;
+        }
+        .star-btn:hover {
+            transform: scale(1.2);
+        }
+        .star-btn.active {
+            animation: star-pulse 0.3s ease;
+        }
+        @keyframes star-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        .rating-save-btn {
+            background: var(--green-matrix);
+            color: var(--bg-color);
+            border-color: var(--green-matrix);
+            margin-top: 20px;
+        }
+        .rating-save-btn:hover {
+            background: var(--blue-neon);
+            border-color: var(--blue-neon);
+        }
+        .rating-close-btn {
+            background: transparent;
+            border-color: var(--red-blood);
+            color: var(--red-blood);
+            margin-top: 10px;
+        }
+        .rating-close-btn:hover {
+            background: var(--red-blood);
+            color: var(--bg-color);
+        }
+        .tablero-section {
+            margin-bottom: 40px;
+            border: 1px solid var(--green-matrix);
+            padding: 20px;
+            background: #0a0a0a;
+        }
+        .tablero-section h3 {
+            color: var(--blue-neon);
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid var(--green-matrix);
+            padding-bottom: 10px;
+        }
+        .buscador-perfiles {
+            margin-bottom: 20px;
+        }
+        .buscador-perfiles input {
+            width: 100%;
+            padding: 15px;
+            background: #050505;
+            border: 1px solid var(--blue-neon);
+            color: var(--blue-neon);
+            font-family: var(--font-code);
+            font-size: 14px;
+        }
+        .buscador-perfiles input:focus {
+            box-shadow: 0 0 15px var(--blue-neon);
+        }
+        .sugerencias-lista {
+            border: 1px solid var(--blue-neon);
+            background: #050505;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 5px;
+        }
+        .sugerencia-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--green-matrix);
+            cursor: pointer;
+            font-family: var(--font-code);
+            font-size: 13px;
+        }
+        .sugerencia-item:hover {
+            background: var(--blue-neon);
+            color: var(--bg-color);
+        }
+        .culpable-section {
+            border: 2px solid var(--red-blood);
+            padding: 20px;
+            background: #0a0a0a;
+            margin-top: 30px;
+        }
+        .culpable-section h3 {
+            color: var(--red-blood);
+            margin-bottom: 15px;
+        }
+        .culpable-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .culpable-card {
+            border: 2px solid var(--green-matrix);
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #050505;
+        }
+        .culpable-card:hover {
+            border-color: var(--blue-neon);
+            box-shadow: 0 0 15px var(--blue-neon);
+        }
+        .culpable-card.selected-culpable {
+            border-color: var(--red-blood);
+            background: rgba(139, 0, 0, 0.3);
+        }
+        .culpable-card.selected-sospechoso {
+            border-color: var(--blue-neon);
+            background: rgba(0, 255, 255, 0.1);
+        }
+        .culpable-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .culpable-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            border: 2px solid var(--green-matrix);
+        }
+        .culpable-card h4 {
+            font-size: 12px;
+            font-family: var(--font-code);
+        }
+        .culpable-info {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid var(--blue-neon);
+            background: #050505;
+        }
+        .culpable-info p {
+            font-size: 12px;
+            font-family: var(--font-code);
+            line-height: 1.6;
+            margin-bottom: 5px;
+        }
+        .progreso-tablero {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--blue-neon);
+            background: #050505;
+        }
+        .progreso-tablero p {
+            font-size: 12px;
+            font-family: var(--font-code);
+            margin-bottom: 10px;
+        }
+        .mensaje-final {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            text-align: center;
+            padding: 40px;
+        }
+        .mensaje-final h1 {
+            color: var(--red-blood);
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px var(--red-blood);
+        }
+        .mensaje-final .contenido {
+            max-width: 700px;
+            font-family: var(--font-code);
+            font-size: 14px;
+            line-height: 2;
+            color: var(--green-matrix);
+        }
+        .mensaje-final .acierto {
+            color: var(--blue-neon);
+            font-weight: bold;
+        }
+        .mensaje-final .fallo {
+            color: var(--red-blood);
+            font-weight: bold;
+        }
+        .mensaje-final .cerrar-btn {
+            margin-top: 40px;
+            width: auto;
+            padding: 15px 40px;
+            border-color: var(--green-matrix);
+            color: var(--green-matrix);
+        }
+        .perfil-evidencia-container {
+            border: 1px solid var(--green-matrix);
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #050505;
+        }
+        .perfil-evidencia-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--green-matrix);
+        }
+        .perfil-evidencia-header img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid var(--green-matrix);
+        }
+        .perfil-evidencia-header h4 {
+            color: var(--blue-neon);
+            font-size: 14px;
+            font-family: var(--font-code);
+        }
+        .evidencia-counter {
+            color: var(--green-matrix);
+            font-size: 11px;
+            font-family: var(--font-code);
+        }
+        .evidencia-lista-perfil {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .evidencia-item-perfil {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid var(--green-matrix);
+            background: #0a0a0a;
+        }
+        .evidencia-checkbox-perfil {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--green-matrix);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .evidencia-item-perfil.completed .evidencia-checkbox-perfil {
+            background: var(--green-matrix);
+        }
+        .evidencia-item-perfil.completed .evidencia-checkbox-perfil::after {
+            content: '✓';
+            color: var(--bg-color);
+            font-weight: bold;
+            font-size: 10px;
+        }
+        .evidencia-input-perfil {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--green-matrix);
+            font-family: var(--font-code);
+            font-size: 11px;
+            padding: 5px;
+        }
+        .evidencia-item-perfil.completed .evidencia-input-perfil {
+            color: var(--bg-color);
+        }
+        .evidencia-delete-btn {
+            width: auto;
+            padding: 3px 8px;
+            font-size: 10px;
+            margin: 0;
+            border-color: var(--red-blood);
+            color: var(--red-blood);
+        }
+        .evidencia-delete-btn:hover {
+            background: var(--red-blood);
+            color: var(--bg-color);
+        }
+        .evidencia-add-btn-perfil {
+            width: auto;
+            padding: 8px 15px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        .evidencia-bloqueado-msg {
+            color: var(--red-blood);
+            font-size: 11px;
+            font-family: var(--font-code);
+            margin-top: 10px;
+            font-style: italic;
+        }
+        .diario-editor-container {
+            border: 1px solid var(--blue-neon);
+            background: #050505;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .diario-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--green-matrix);
+            padding-bottom: 15px;
+        }
+        .diario-toolbar button {
+            width: auto;
+            padding: 8px 15px;
+            font-size: 14px;
+            margin: 0;
+        }
+        .diario-toolbar button.active {
+            background: var(--blue-neon);
+            color: var(--bg-color);
+        }
+        .diario-content {
+            min-height: 300px;
+            border: 1px solid var(--green-matrix);
+            background: #0a0a0a;
+            padding: 15px;
+            font-family: var(--font-code);
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--green-matrix);
+            outline: none;
+        }
+        .diario-content:focus {
+            border-color: var(--blue-neon);
+            box-shadow: 0 0 10px var(--blue-neon);
+        }
+        .diario-saved-indicator {
+            color: var(--blue-neon);
+            font-size: 11px;
+            margin-top: 10px;
+            font-family: var(--font-code);
+        }
+        .diario-capitulo-info {
+            color: var(--blue-neon);
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-family: var(--font-code);
+        }
+        .popup-sistema {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000;
+            border: 2px solid var(--blue-neon);
+            padding: 30px;
+            z-index: 5000;
+            text-align: center;
+            box-shadow: 0 0 30px var(--blue-neon);
+            max-width: 450px;
+            font-family: var(--font-code);
+        }
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 4999;
+        }
+        .audio-unlock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            text-align: center;
+        }
+        .audio-unlock-screen h2 {
+            color: var(--blue-neon);
+            margin-bottom: 20px;
+        }
+        .audio-unlock-screen p {
+            color: var(--green-matrix);
+            margin-bottom: 30px;
+        }
+        .audio-unlock-screen button {
+            width: auto;
+            padding: 15px 40px;
+            font-size: 16px;
+            background: var(--green-matrix);
+            color: var(--bg-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline"></div>
+
+    <!-- AUDIO UNLOCK PARA MÓVILES -->
+    <div id="audio-unlock-screen" class="audio-unlock-screen">
+        <div>
+            <h2>⚠️ TOCA PARA INICIAR</h2>
+            <p>Activa el sonido para la experiencia completa</p>
+            <button id="audio-unlock-btn">COMENZAR</button>
+        </div>
+    </div>
+
+    <!-- AUDIO ELEMENTS -->
+    <audio id="audio-click" src="assets/audio/ui/click.mp3" preload="auto"></audio>
+    <audio id="audio-hover" src="assets/audio/ui/hover.mp3" preload="auto"></audio>
+    <audio id="audio-error" src="assets/audio/alerts/error.mp3" preload="auto"></audio>
+    <audio id="audio-unlock" src="assets/audio/progress/profile_unlock.mp3" preload="auto"></audio>
+    <audio id="audio-chapter" src="assets/audio/progress/chapter_complete.mp3" preload="auto"></audio>
+    <audio id="audio-tomo" src="assets/audio/progress/tomo_complete.mp3" preload="auto"></audio>
+    <audio id="audio-noir" src="assets/audio/reward/noir_unlock.mp3" preload="auto"></audio>
+    <audio id="audio-celebration" src="assets/audio/reward/celebration.mp3" preload="auto"></audio>
+    <audio id="audio-glitch" src="assets/audio/alerts/glitch.mp3" preload="auto"></audio>
+    <audio id="audio-reveal" src="assets/audio/reveals/identity_reveal.mp3" preload="auto"></audio>
+    <audio id="audio-rating" src="assets/audio/ui/click.mp3" preload="auto"></audio>
+
+    <!-- PANTALLA 1: SEGURIDAD -->
+    <div id="pantalla-seguridad" class="container hidden">
+        <h1>ARCHIVO RAVEN'S RIDGE</h1>
+        <div class="input-group">
+            <label>PREGUNTA DE SEGURIDAD:<br>
+            ¿Cuál es el recurso legal que aparece al final del capítulo 3 del Tomo 1?<br>
+            <span style="color: var(--blue-neon)">PISTA: 2 palabras</span></label>
+            <input type="text" id="respuesta-seguridad" placeholder="Escribe tu respuesta...">
+        </div>
+        <div class="input-group">
+            <label>Intentos restantes: <span id="intentos-restantes">3</span></label>
+        </div>
+        <button onmouseenter="tocarSonido('hover')" onclick="validarSeguridad()">DESENCRIPTAR</button>
+        <p id="mensaje-error" class="error-message hidden"></p>
+    </div>
+
+    <!-- PANTALLA 2: REGISTRO -->
+    <div id="pantalla-registro" class="container hidden">
+        <h1>NUEVO USUARIO DETECTADO</h1>
+        <div class="input-group">
+            <label>INGRESE IDENTIFICADOR DE AGENTE:<br>
+            <span style="color: var(--blue-neon)">Este será tu nombre en el sistema</span></label>
+            <input type="text" id="nombre-usuario" placeholder="Alias..." maxlength="20">
+        </div>
+        <button onmouseenter="tocarSonido('hover')" onclick="guardarUsuario()">INICIAR SISTEMA</button>
+    </div>
+
+    <!-- PANTALLA 3: BOOT SEQUENCE -->
+    <div id="pantalla-carga" class="container hidden">
+        <div id="boot-text" class="boot-text"></div>
+    </div>
+
+    <!-- PANTALLA 4: DASHBOARD -->
+    <div id="pantalla-dashboard" class="container hidden">
+        <h1>ARCHIVO RAVEN'S RIDGE</h1>
+        <p class="welcome-text">Welcome back, <span id="nombre-display"></span></p>
+        <p class="status-text">Status: All systems nominal</p>
+        
+        <div class="nav-grid">
+            <button onmouseenter="tocarSonido('hover')" onclick="tocarSonido('click'); mostrarPantalla('pantalla-perfiles')">PERFILES</button>
+            <button onmouseenter="tocarSonido('hover')" onclick="tocarSonido('click'); mostrarPantalla('pantalla-capitulos')">CAPITULOS</button>
+            <button onmouseenter="tocarSonido('hover')" onclick="tocarSonido('click'); mostrarPantalla('pantalla-tablero')">TABLERO</button>
+            <button onmouseenter="tocarSonido('hover')" onclick="tocarSonido('click'); mostrarPantalla('pantalla-diario')">DIARIO</button>
+        </div>
+        
+        <button onmouseenter="tocarSonido('hover')" onclick="tocarSonido('click'); cerrarSesion()" style="border-color: var(--red-blood); color: var(--red-blood); margin-top: 30px;">
+            CERRAR SESION
+        </button>
+    </div>
+
+    <!-- PANTALLA 5: GRID DE PERFILES -->
+    <div id="pantalla-perfiles" class="container hidden">
+        <div class="top-nav">
+            <h1>BASE DE DATOS: SUJETOS</h1>
+            <div class="nav-links">
+                <button class="back-btn" onmouseenter="tocarSonido('hover')" onclick="tocarSonido('click'); mostrarPantalla('pantalla-dashboard')">VOLVER</button>
+            </div>
+        </div>
+        <div id="profiles-grid" class="profiles-grid"></div>
+    </div>
+
+    <!-- PANTALLA 6: DETALLE DE PERFIL -->
+    <div id="pantalla-perfil-detalle" class="container hidden">
+        <div class="top-nav">
+            <h1 id="detalle-nombre">NOMBRE</h1>
+            <div class="nav-links">
+                <button class="back-btn" onmouseenter="tocarSonido('hover')" onclick="tocarSonido('click'); guardarYVolver()">VOLVER</button>
+            </div>
+        </div>
+        <div class="profile-detail">
+            <div class="image-section">
+                <div class="image-container" id="detalle-image-container">
+                    <img id="detalle-imagen" src="" alt="Perfil">
+                </div>
+                <p id="flip-hint" class="flip-hint hidden">Click para revelar identidad</p>
+                <div id="detalle-estado" class="tag-display">ACTIVO</div>
+            </div>
+            <div class="info-section">
+                <h2 id="detalle-nombre-completo">Nombre</h2>
+                <div class="role" id="detalle-rol">Rol</div>
+                <div class="description" id="detalle-descripcion">Descripción...</div>
+                <div id="reveal-message" class="reveal-message hidden"></div>
+                <div class="input-group" id="tags-section">
+                    <label>ETIQUETAS (Selecciona múltiples):</label>
+                    <select id="etiquetas-select" multiple size="5" onchange="actualizarSeleccionadas()">
+                        <option value="investigador">Investigador</option>
+                        <option value="sujeto_interes">Sujeto de Interés</option>
+                        <option value="testigo_clave">Testigo Clave</option>
+                        <option value="informante">Informante</option>
+                        <option value="pista_falsa">Pista Falsa</option>
+                        <option value="mente_maestra">Mente Maestra</option>
+                        <option value="sospechoso">Sospechoso</option>
+                        <option value="desaparecido">Desaparecido</option>
+                        <option value="objetivo">Objetivo</option>
+                        <option value="superviviente">Superviviente</option>
+                        <option value="cebo">Cebo</option>
+                        <option value="muerto">Muerto</option>
+                        <option value="activo">Activo</option>
+                        <option value="ejecutor">Ejecutor</option>
+                        <option value="peon">Peón</option>
+                        <option value="encubierto">Encubierto</option>
+                    </select>
+                    <div class="tags-selected">
+                        <h4>SELECCIONADAS:</h4>
+                        <div id="tags-seleccionadas"></div>
+                    </div>
+                    <div id="detalle-tag-fijo" class="tag-display fixed hidden" style="margin-top: 15px;"></div>
+                </div>
+                <div class="input-group">
+                    <label>NOTAS:</label>
+                    <textarea id="detalle-notas" placeholder="Escribe tus observaciones..."></textarea>
+                </div>
+                <button onclick="guardarYVolver()">GUARDAR Y VOLVER</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA 7: CAPÍTULOS -->
+    <div id="pantalla-capitulos" class="container hidden">
+        <div class="top-nav">
+            <h1>ARCHIVO: CAPÍTULOS</h1>
+            <div class="nav-links">
+                <button class="back-btn" onmouseenter="tocarSonido('hover')" onclick="tocarSonido('click'); mostrarPantalla('pantalla-dashboard')">VOLVER</button>
+            </div>
+        </div>
+        <div class="progress-container">
+            <h3 style="color: var(--blue-neon); margin-bottom: 10px;">PROGRESO GLOBAL</h3>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+            </div>
+            <p id="progress-text" class="progress-text">0% completado</p>
+        </div>
+        <div class="tomo-selector">
+            <button class="tomo-btn active" onclick="cambiarTomo(1)">TOMO 1</button>
+            <button class="tomo-btn" onclick="cambiarTomo(2)">TOMO 2</button>
+        </div>
+        <div id="capitulos-container"></div>
+    </div>
+
+    <!-- PANTALLA 8: TABLERO -->
+    <div id="pantalla-tablero" class="container hidden">
+        <div class="top-nav">
+            <h1>TABLERO DEL INVESTIGADOR</h1>
+            <div class="nav-links">
+                <button class="back-btn" onmouseenter="tocarSonido('hover')" onclick="tocarSonido('click'); mostrarPantalla('pantalla-dashboard')">VOLVER</button>
+            </div>
+        </div>
+        <div class="progreso-tablero">
+            <p><strong>PROGRESO TOMO 2:</strong> <span id="progreso-t2-texto">0/28</span> capítulos</p>
+            <div class="progress-bar">
+                <div id="progreso-t2-barra" class="progress-fill" style="width: 0%;"></div>
+            </div>
+            <p id="mensaje-culpable" style="color: var(--red-blood); margin-top: 10px; display: none;">⚠️ Has leído lo suficiente. Elige un culpable antes de continuar.</p>
+        </div>
+        <div class="tablero-section">
+            <h3>🔍 BUSCADOR DE SUJETOS</h3>
+            <div class="buscador-perfiles">
+                <input type="text" id="buscador-input" placeholder="Escribe nombre para autocompletar..." oninput="buscarSujeto()">
+                <div id="buscador-sugerencias" class="sugerencias-lista hidden"></div>
+            </div>
+            <div id="buscador-resultado" class="culpable-info hidden">
+                <p id="buscador-info"></p>
+            </div>
+        </div>
+        <div class="tablero-section">
+            <h3>📁 EVIDENCIAS POR SOSPECHOSO</h3>
+            <p style="color: var(--green-matrix); font-size: 11px; font-family: var(--font-code); margin-bottom: 15px;">Añade hasta 5 evidencias por perfil. Se bloquearán al confirmar tu culpable.</p>
+            <div id="evidencias-por-perfil-container"></div>
+        </div>
+        <div class="culpable-section" id="culpable-section">
+            <h3>⚠️ SELECCIONAR CULPABLE</h3>
+            <p style="color: var(--green-matrix); font-size: 12px; font-family: var(--font-code);">Elige 1 culpable principal, luego confirma haciendo click de nuevo. Puedes añadir hasta 2 sospechosos adicionales.</p>
+            <div class="culpable-grid" id="culpable-grid"></div>
+            <div class="culpable-info">
+                <p><strong>CULPABLE:</strong> <span id="culpable-seleccionado">Ninguno</span></p>
+                <p><strong>SOSPECHOSOS:</strong> <span id="sospechosos-seleccionados">Ninguno</span></p>
+                <p style="color: var(--red-blood); margin-top: 10px;">⚠️ Esta selección es PERMANENTE y no puede modificarse.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA 9: DIARIO -->
+    <div id="pantalla-diario" class="container hidden">
+        <div class="top-nav">
+            <h1>📔 DIARIO DE LECTURA</h1>
+            <div class="nav-links">
+                <button class="back-btn" onmouseenter="tocarSonido('hover')" onclick="tocarSonido('click'); mostrarPantalla('pantalla-dashboard')">VOLVER</button>
+            </div>
+        </div>
+        <div class="diario-capitulo-info">
+            <p><strong>CAPÍTULO ACTUAL:</strong> <span id="diario-capitulo-seleccionado">Ninguno</span></p>
+            <p style="font-size: 11px; margin-top: 5px;">Selecciona un capítulo leído para escribir o ver tus notas.</p>
+        </div>
+        <div class="tablero-section">
+            <h3>📁 SELECCIONAR CAPÍTULO</h3>
+            <div class="tomo-selector">
+                <button class="tomo-btn active" onclick="cambiarTomoDiario(1)">TOMO 1</button>
+                <button class="tomo-btn" onclick="cambiarTomoDiario(2)">TOMO 2</button>
+            </div>
+            <div id="diario-capitulos-lista" class="capitulos-list"></div>
+        </div>
+        <div class="diario-editor-container">
+            <div class="diario-toolbar">
+                <button onclick="formatoDiario('bold')" id="btn-bold"><b>B</b></button>
+                <button onclick="formatoDiario('italic')" id="btn-italic"><i>I</i></button>
+                <button onclick="formatoDiario('underline')" id="btn-underline"><u>U</u></button>
+                <button onclick="limpiarFormatoDiario()" style="border-color: var(--red-blood); color: var(--red-blood);">🗑️ Limpiar</button>
+            </div>
+            <div id="diario-editor" class="diario-content" contenteditable="true"></div>
+            <button onclick="guardarDiario()" style="margin-top: 20px; background: var(--green-matrix); color: var(--bg-color); border-color: var(--green-matrix);">💾 GUARDAR ENTRADA</button>
+            <p id="diario-guardado-indicador" class="diario-saved-indicator hidden">✓ Entrada guardada</p>
+        </div>
+    </div>
+
+    <!-- PANTALLA 10: RECOMPENSA NOIR -->
+    <div id="pantalla-noir-reward" class="noir-reward hidden">
+        <video id="noir-video" src="assets/images/noir_1.mp4" muted autoplay loop></video>
+        <h1>N-OIR tiene un regalo para ti</h1>
+        <p id="noir-mensaje">Gracias por completar Crónicas de Raven's Ridge. Has llegado hasta el final.</p>
+        <a href="https://lrjeffers.short.gy/YcllvM" class="download-btn" onclick="tocarSonido('celebration')">DESCARGAR PAQUETE ESPECIAL</a>
+        <button class="close-btn" onclick="cerrarNoirReward()">CERRAR</button>
+    </div>
+
+    <!-- MENSAJE FINAL -->
+    <div id="mensaje-final-modal" class="mensaje-final hidden">
+        <h1>⚠️ ARCHIVO RAVEN'S RIDGE — CERRADO</h1>
+        <div class="contenido" id="mensaje-final-contenido"></div>
+        <button class="cerrar-btn" onclick="cerrarMensajeFinal()">CONTINUAR</button>
+    </div>
+
+    <!-- MODAL DE CALIFICACIÓN -->
+    <div id="rating-modal" class="rating-modal hidden">
+        <div class="rating-content">
+            <h2 id="rating-capitulo-titulo">CAPÍTULO X</h2>
+            <div class="rating-category">
+                <h3>⭐ CALIDAD</h3>
+                <div class="stars-container" id="calidad-stars">
+                    <button class="star-btn" data-value="1">☆</button>
+                    <button class="star-btn" data-value="2">☆</button>
+                    <button class="star-btn" data-value="3">☆</button>
+                    <button class="star-btn" data-value="4">☆</button>
+                    <button class="star-btn" data-value="5">☆</button>
+                </div>
+            </div>
+            <div class="rating-category">
+                <h3>🌶️ SPICY</h3>
+                <div class="stars-container" id="spicy-stars">
+                    <button class="star-btn" data-value="1">☆</button>
+                    <button class="star-btn" data-value="2">☆</button>
+                    <button class="star-btn" data-value="3">☆</button>
+                    <button class="star-btn" data-value="4">☆</button>
+                    <button class="star-btn" data-value="5">☆</button>
+                </div>
+            </div>
+            <div class="rating-category">
+                <h3>🔍 MISTERIO</h3>
+                <div class="stars-container" id="misterio-stars">
+                    <button class="star-btn" data-value="1">☆</button>
+                    <button class="star-btn" data-value="2">☆</button>
+                    <button class="star-btn" data-value="3">☆</button>
+                    <button class="star-btn" data-value="4">☆</button>
+                    <button class="star-btn" data-value="5">☆</button>
+                </div>
+            </div>
+            <button class="rating-save-btn" onclick="guardarCalificacion()">GUARDAR CALIFICACIÓN</button>
+            <button class="rating-close-btn" onclick="cerrarCalificacion()">CANCELAR</button>
+        </div>
+    </div>
+
+    <!-- RESET BUTTON -->
+    <button class="reset-btn" onclick="resetearTodo()">RESET DE FÁBRICA</button>
+
+    <script>
+        // CONFIGURACIÓN
+        var CONFIG = {
+            respuestaCorrecta: 'habeas corpus',
+            maxIntentos: 3,
+            bloqueoHoras: 24,
+            claveIntentos: 'rr_intentos',
+            claveBloqueo: 'rr_bloqueo_hasta',
+            claveUsuario: 'rr_usuario',
+            claveProgreso: 'rr_progreso',
+            claveNoirDesbloqueado: 'rr_noir_desbloqueado',
+            claveNoirVisto: 'rr_noir_visto',
+            claveCalificaciones: 'rr_calificaciones',
+            claveTablero: 'rr_tablero',
+            claveCulpable: 'rr_culpable',
+            claveEvidenciasPerfiles: 'rr_evidencias_perfiles',
+            claveDiario: 'rr_diario',
+            claveMensajeFinalVisto: 'rr_mensaje_final_visto',
+            rutaImagenes: 'assets/images/'
+        };
+
+        var CAPITULOS = {
+            tomo1: { titulo: 'La sombra del cuervo', prologo: true, capitulos: 26, epilogue: true, extra: false },
+            tomo2: { titulo: 'Misa de ceniza', prologo: true, capitulos: 28, epilogue: true, extra: true }
+        };
+
+        var CULPABLES_POSIBLES = [
+            { id: 'PERFIL_01_DRAKE', nombre: 'Drake Holloway', imagen: 'drake_neutral.png' },
+            { id: 'PERFIL_02_KILLIAN', nombre: 'Killian Graves', imagen: 'killian_neutral.png' },
+            { id: 'PERFIL_03_AINSLEY', nombre: 'Ainsley MacAllister', imagen: 'ainsley_neutral.jpg' },
+            { id: 'PERFIL_04_CASSIDY', nombre: 'Cassidy Graves', imagen: 'cassidy_viva.jpg' },
+            { id: 'PERFIL_05_ELIOTT', nombre: 'Eliott Vance', imagen: 'eliott_neutral.png' },
+            { id: 'PERFIL_06_BRIDGET', nombre: 'Bridget Fischer', imagen: 'bridget_neutral.png' },
+            { id: 'PERFIL_07_HARLAN', nombre: 'Harlan Boyd', imagen: 'harlan_neutral.png' }
+        ];
+
+        var CULPABLES_REALES = ['PERFIL_03_AINSLEY', 'PERFIL_05_ELIOTT', 'PERFIL_06_BRIDGET'];
+
+        var ETIQUETAS_MAP = {
+            'investigador': 'Investigador', 'sujeto_interes': 'Sujeto de Interés', 'testigo_clave': 'Testigo Clave',
+            'informante': 'Informante', 'pista_falsa': 'Pista Falsa', 'mente_maestra': 'Mente Maestra',
+            'sospechoso': 'Sospechoso', 'desaparecido': 'Desaparecido', 'objetivo': 'Objetivo',
+            'superviviente': 'Superviviente', 'cebo': 'Cebo', 'muerto': 'Muerto',
+            'activo': 'Activo', 'ejecutor': 'Ejecutor', 'peon': 'Peón', 'encubierto': 'Encubierto'
+        };
+
+        var PERFILES = [
+            { id: 'PERFIL_00_MORWYN', nombre: 'Morwyn Shade', rol: 'Asesino oculto tras el mito', descripcion: 'Fantasma de humo lila. Figura esquelética con piel de alabastro y grietas doradas.', imagen: 'morwyn_shade.png', imagenRevelada: 'ainsley_final.jpg', etiquetaFija: 'LEYENDA URBANA', editable: false, bloqueado: false, esNoir: false, tieneRevelacion: true },
+            { id: 'PERFIL_01_DRAKE', nombre: 'Drake Holloway', rol: 'Hacker de élite / Protagonista', descripcion: 'Hombre trans. 1.90m. Piel cobriza, ojos azules, cabello azabache.', imagen: 'drake_neutral.png', imagenFinal: 'fin_cronicas_rr.png', etiquetaFija: null, editable: true, bloqueado: false, esNoir: false, tieneRevelacion: false },
+            { id: 'PERFIL_02_KILLIAN', nombre: 'Killian Graves', rol: 'Dueño club KaRon / Protagonista', descripcion: 'Hombre cis. 1.83m. Piel pálida, ojos negros, cabello negro con mechas azules.', imagen: 'killian_neutral.png', imagenFinal: 'fin_cronicas_rr.png', etiquetaFija: null, editable: true, bloqueado: false, esNoir: false, tieneRevelacion: false },
+            { id: 'PERFIL_03_AINSLEY', nombre: 'Ainsley MacAllister', rol: 'Víctima inicial', descripcion: '1.60m. Piel pálida. Cabello cobrizo largo, ojos castaños.', imagen: 'ainsley_neutral.jpg', imagenFinal: 'ainsley_final.jpg', etiquetaFija: null, editable: true, bloqueado: false, esNoir: false, tieneRevelacion: false },
+            { id: 'PERFIL_04_CASSIDY', nombre: 'Cassidy Graves', rol: 'Hermana de Killian / Amiga de Ainsley', descripcion: '1.67m. Esbelta. Cabello oscuro, ojos avellana.', imagen: 'cassidy_viva.jpg', imagenGlitch: 'cassidy_viva.jpg', imagenFinal: 'cassidy_memorial.png', etiquetaFija: null, editable: true, bloqueado: false, esNoir: false, tieneRevelacion: false },
+            { id: 'PERFIL_05_ELIOTT', nombre: 'Eliott Vance', rol: 'Pareja de Ainsley / Team Ainsley', descripcion: '1.93m. Complexión fuerte. Piel trigueña. Cabello castaño.', imagen: 'eliott_neutral.png', imagenFinal: 'eliott_final.png', etiquetaFija: null, editable: true, bloqueado: false, esNoir: false, tieneRevelacion: false },
+            { id: 'PERFIL_06_BRIDGET', nombre: 'Bridget Fischer', rol: 'Amiga cercana del grupo', descripcion: '1.63m. Esbelta. Cabello negro largo, ojos marrones.', imagen: 'bridget_neutral.png', imagenFinal: 'bridget_final.png', etiquetaFija: null, editable: true, bloqueado: false, esNoir: false, tieneRevelacion: false },
+            { id: 'PERFIL_07_HARLAN', nombre: 'Harlan Boyd', rol: 'Jefe de Policía', descripcion: '1.89m. Atlético. Cabello corto con raíces doradas. Ojos ámbar oscuro.', descripcionSecreta: '\n\n[IDENTIDAD REVELADA: Micah Lancaster]\nÚnico superviviente del culto de Moonlit Vale.', imagen: 'harlan_neutral.png', imagenRevelada: 'harlan_final.png', etiquetaFija: null, editable: true, bloqueado: false, esNoir: false, tieneRevelacion: true },
+            { id: 'PERFIL_001_NOIR', nombre: 'N-OIR', rol: 'Recompensa Final', descripcion: 'Entidad misteriosa. Otorga recompensas a quienes completan la experiencia.', imagen: 'noir_1.jpg', etiquetaFija: null, editable: false, bloqueado: true, esNoir: true, tieneRevelacion: false }
+        ];
+
+        var perfilActual = null;
+        var tomoActual = 1;
+        var tomoDiarioActual = 1;
+        var capituloDiarioActual = null;
+        var morwynRevelado = false;
+        var harlanRevelado = false;
+        var capituloActualCalificacion = null;
+        var calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 };
+        var audioDesbloqueado = false;
+
+        // INICIAR APP
+        window.onload = function() {
+            // Configurar botón de audio unlock
+            document.getElementById('audio-unlock-btn').addEventListener('click', function() {
+                audioDesbloqueado = true;
+                tocarSonido('click');
+                document.getElementById('audio-unlock-screen').style.display = 'none';
+                iniciarApp();
+            });
+        };
+
+        function iniciarApp() {
+            var bloqueoHasta = localStorage.getItem(CONFIG.claveBloqueo);
+            var usuario = localStorage.getItem(CONFIG.claveUsuario);
+            var noirDesbloqueado = localStorage.getItem(CONFIG.claveNoirDesbloqueado);
+            var noirVisto = localStorage.getItem(CONFIG.claveNoirVisto);
+
+            if (bloqueoHasta && new Date().getTime() < bloqueoHasta) {
+                mostrarBloqueo();
+            } else if (usuario) {
+                iniciarBootSequence(usuario);
+                if (noirDesbloqueado === 'true' && noirVisto !== 'true') {
+                    setTimeout(function() { 
+                        mostrarRecompensaNoir(); 
+                        localStorage.setItem(CONFIG.claveNoirVisto, 'true');
+                    }, 2000);
+                }
+            } else {
+                mostrarPantalla('pantalla-seguridad');
+            }
+        }
+
+        function tocarSonido(tipo) {
+            if (!audioDesbloqueado) return;
+            var audio;
+            if (tipo === 'click') audio = document.getElementById('audio-click');
+            else if (tipo === 'hover') audio = document.getElementById('audio-hover');
+            else if (tipo === 'error') audio = document.getElementById('audio-error');
+            else if (tipo === 'unlock') audio = document.getElementById('audio-unlock');
+            else if (tipo === 'chapter') audio = document.getElementById('audio-chapter');
+            else if (tipo === 'tomo') audio = document.getElementById('audio-tomo');
+            else if (tipo === 'noir') audio = document.getElementById('audio-noir');
+            else if (tipo === 'celebration') audio = document.getElementById('audio-celebration');
+            else if (tipo === 'glitch') audio = document.getElementById('audio-glitch');
+            else if (tipo === 'reveal') audio = document.getElementById('audio-reveal');
+            else if (tipo === 'rating') audio = document.getElementById('audio-rating');
+            if (audio) {
+                audio.currentTime = 0;
+                audio.volume = 0.5;
+                audio.play().catch(function(e) { console.log('Audio:', e); });
+            }
+        }
+
+        function mostrarPantalla(id) {
+            var containers = document.querySelectorAll('.container');
+            for (var i = 0; i < containers.length; i++) {
+                containers[i].classList.add('hidden');
+            }
+            document.getElementById(id).classList.remove('hidden');
+            if (id === 'pantalla-perfiles') renderizarPerfiles();
+            else if (id === 'pantalla-capitulos') renderizarCapitulos();
+            else if (id === 'pantalla-tablero') renderizarTablero();
+            else if (id === 'pantalla-diario') renderizarDiario();
+        }
+
+        function validarSeguridad() {
+            var respuesta = document.getElementById('respuesta-seguridad').value.toLowerCase().trim();
+            var intentosElement = document.getElementById('intentos-restantes');
+            var mensajeError = document.getElementById('mensaje-error');
+            var intentos = parseInt(localStorage.getItem(CONFIG.claveIntentos)) || CONFIG.maxIntentos;
+            if (respuesta === CONFIG.respuestaCorrecta) {
+                localStorage.setItem(CONFIG.claveIntentos, CONFIG.maxIntentos);
+                localStorage.removeItem(CONFIG.claveBloqueo);
+                tocarSonido('click');
+                mostrarPantalla('pantalla-registro');
+            } else {
+                intentos--;
+                localStorage.setItem(CONFIG.claveIntentos, intentos);
+                intentosElement.textContent = intentos;
+                if (intentos <= 0) {
+                    var bloqueoHasta = new Date().getTime() + (CONFIG.bloqueoHoras * 60 * 60 * 1000);
+                    localStorage.setItem(CONFIG.claveBloqueo, bloqueoHasta);
+                    mostrarBloqueo();
+                } else {
+                    mensajeError.textContent = 'ACCESO DENEGADO. Intentos: ' + intentos;
+                    mensajeError.classList.remove('hidden');
+                    tocarSonido('error');
+                }
+            }
+        }
+
+        function mostrarBloqueo() {
+            var container = document.getElementById('pantalla-seguridad');
+            container.innerHTML = '<h1 style="color: var(--red-blood); text-align: center;">ACCESO BLOQUEADO</h1>' +
+                '<p class="error-message" style="font-size: 16px; margin: 20px 0; text-align: center;">Demasiados intentos fallidos.<br>Bloqueo por 24 horas.</p>' +
+                '<p style="color: var(--blue-neon); font-size: 14px; text-align: center;">PISTA: MAYÚSCULAS al final del CAPÍTULO 3</p>';
+            tocarSonido('error');
+        }
+
+        function guardarUsuario() {
+            var nombre = document.getElementById('nombre-usuario').value.trim();
+            if (nombre) {
+                localStorage.setItem(CONFIG.claveUsuario, nombre);
+                tocarSonido('click');
+                iniciarBootSequence(nombre);
+            } else {
+                alert('Ingresa un identificador');
+                tocarSonido('error');
+            }
+        }
+
+        function iniciarBootSequence(nombre) {
+            mostrarPantalla('pantalla-carga');
+            var bootText = document.getElementById('boot-text');
+            tocarSonido('unlock');
+            var lineas = [
+                'ARCHIVO RAVEN\'S RIDGE - Secure Boot Sequence Initiated...',
+                'Loading core modules...', 'Checking integrity...',
+                'Status: All systems nominal', 'Establishing secure connection...',
+                'Welcome back, ' + nombre, 'Access granted.<span class="blink">_</span>'
+            ];
+            var i = 0;
+            var intervalo = setInterval(function() {
+                if (i < lineas.length) {
+                    var linea = document.createElement('div');
+                    linea.className = 'boot-line';
+                    linea.style.animationDelay = (i * 0.3) + 's';
+                    linea.innerHTML = '> ' + lineas[i];
+                    bootText.appendChild(linea);
+                    i++;
+                } else {
+                    clearInterval(intervalo);
+                    setTimeout(function() { mostrarDashboard(nombre); }, 1500);
+                }
+            }, 500);
+        }
+
+        function mostrarDashboard(nombre) {
+            mostrarPantalla('pantalla-dashboard');
+            document.getElementById('nombre-display').textContent = nombre;
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem(CONFIG.claveUsuario);
+            location.reload();
+        }
+
+        function mostrarMensaje(msg) { alert(msg); }
+
+        function resetearTodo() {
+            if (confirm('¿ESTÁS SEGURO? Esto borrará TODO tu progreso.')) {
+                localStorage.clear();
+                alert('Reset completado. La página se recargará.');
+                location.reload();
+            }
+        }
+
+        function getProgreso() {
+            var guardado = localStorage.getItem(CONFIG.claveProgreso);
+            if (guardado) return JSON.parse(guardado);
+            return { tomo1: { completados: [], epilogue: false }, tomo2: { completados: [], epilogue: false, extra: false } };
+        }
+
+        function guardarProgreso(progreso) {
+            localStorage.setItem(CONFIG.claveProgreso, JSON.stringify(progreso));
+        }
+
+        function getCalificaciones() {
+            var guardado = localStorage.getItem(CONFIG.claveCalificaciones);
+            if (guardado) return JSON.parse(guardado);
+            return {};
+        }
+
+        function guardarCalificaciones(calificaciones) {
+            localStorage.setItem(CONFIG.claveCalificaciones, JSON.stringify(calificaciones));
+        }
+
+        function getTablero() {
+            var guardado = localStorage.getItem(CONFIG.claveTablero);
+            if (guardado) return JSON.parse(guardado);
+            return { evidencias: [] };
+        }
+
+        function guardarTablero(tablero) {
+            localStorage.setItem(CONFIG.claveTablero, JSON.stringify(tablero));
+        }
+
+        function getCulpable() {
+            var guardado = localStorage.getItem(CONFIG.claveCulpable);
+            if (guardado) return JSON.parse(guardado);
+            return { culpable: null, sospechosos: [], bloqueado: false };
+        }
+
+        function guardarCulpable(culpableData) {
+            localStorage.setItem(CONFIG.claveCulpable, JSON.stringify(culpableData));
+        }
+
+        function getEvidenciasPerfiles() {
+            var guardado = localStorage.getItem(CONFIG.claveEvidenciasPerfiles);
+            if (guardado) return JSON.parse(guardado);
+            return {};
+        }
+
+        function guardarEvidenciasPerfiles(evidencias) {
+            localStorage.setItem(CONFIG.claveEvidenciasPerfiles, JSON.stringify(evidencias));
+        }
+
+        function getDiario() {
+            var guardado = localStorage.getItem(CONFIG.claveDiario);
+            if (guardado) return JSON.parse(guardado);
+            return {};
+        }
+
+        function guardarDiarioEntrada(capituloId, contenido) {
+            var diario = getDiario();
+            diario[capituloId] = contenido;
+            localStorage.setItem(CONFIG.claveDiario, JSON.stringify(diario));
+        }
+
+        function marcarCapitulo(tomo, cap) {
+            var progreso = getProgreso();
+            var tomoKey = 'tomo' + tomo;
+            if (cap === 'epilogue') {
+                if (!progreso[tomoKey].epilogue) {
+                    progreso[tomoKey].epilogue = true;
+                    tocarSonido('tomo');
+                } else {
+                    progreso[tomoKey].epilogue = false;
+                    tocarSonido('click');
+                }
+            } else if (cap === 'extra') {
+                if (!progreso[tomoKey].extra) {
+                    progreso[tomoKey].extra = true;
+                    tocarSonido('tomo');
+                    localStorage.setItem(CONFIG.claveNoirDesbloqueado, 'true');
+                    setTimeout(function() {
+                        mostrarRecompensaNoir();
+                        localStorage.setItem(CONFIG.claveNoirVisto, 'true');
+                    }, 500);
+                } else {
+                    progreso[tomoKey].extra = false;
+                    tocarSonido('click');
+                }
+            } else {
+                var index = progreso[tomoKey].completados.indexOf(cap);
+                if (index === -1) {
+                    progreso[tomoKey].completados.push(cap);
+                    tocarSonido('chapter');
+                    verificarDesbloqueos(tomo, cap);
+                    setTimeout(function() { abrirCalificacion(tomo, cap); }, 300);
+                } else {
+                    progreso[tomoKey].completados.splice(index, 1);
+                    tocarSonido('click');
+                }
+            }
+            guardarProgreso(progreso);
+            renderizarCapitulos();
+            actualizarProgresoGlobal();
+        }
+
+        function verificarDesbloqueos(tomo, cap) {
+            if (tomo === 2 && cap === 14) { tocarSonido('glitch'); mostrarPopupSistema('⚠️ ANOMALÍA DETECTADA\nEl estado de Cassidy Graves ha cambiado.\nRevisa los perfiles.'); }
+            if (tomo === 2 && cap === 16) { tocarSonido('glitch'); mostrarPopupSistema('⚠️ SEÑAL PERDIDA\nCassidy Graves: Estado crítico confirmado.'); }
+            if (tomo === 2 && cap === 6) { tocarSonido('reveal'); mostrarPopupSistema('⚠️ IDENTIDAD COMPROMETIDA\nInconsistencia en Harlan Boyd detectada.'); }
+            if (tomo === 2 && cap === 26) { tocarSonido('reveal'); mostrarPopupSistema('⚠️ REVELACIÓN CRÍTICA\nLa verdad sobre Morwyn Shade ha sido expuesta.'); }
+            if (tomo === 2 && cap === 27) { tocarSonido('reveal'); mostrarPopupSistema('⚠️ CONSPIRACIÓN CONFIRMADA\nNuevos cómplices identificados.'); }
+            if (tomo === 2 && cap === 28) { tocarSonido('reveal'); mostrarMensajeFinal(); }
+        }
+
+        function actualizarProgresoGlobal() {
+            var progreso = getProgreso();
+            var totalTomo1 = CAPITULOS.tomo1.capitulos + (CAPITULOS.tomo1.prologo ? 1 : 0) + (CAPITULOS.tomo1.epilogue ? 1 : 0);
+            var totalTomo2 = CAPITULOS.tomo2.capitulos + (CAPITULOS.tomo2.prologo ? 1 : 0) + (CAPITULOS.tomo2.epilogue ? 1 : 0) + (CAPITULOS.tomo2.extra ? 1 : 0);
+            var total = totalTomo1 + totalTomo2;
+            var completados = progreso.tomo1.completados.length + (progreso.tomo1.epilogue ? 1 : 0) + progreso.tomo2.completados.length + (progreso.tomo2.epilogue ? 1 : 0) + (progreso.tomo2.extra ? 1 : 0);
+            var porcentaje = Math.round((completados / total) * 100);
+            document.getElementById('progress-fill').style.width = porcentaje + '%';
+            document.getElementById('progress-text').textContent = porcentaje + '% completado (' + completados + '/' + total + ')';
+        }
+
+        function cambiarTomo(tomo) {
+            tomoActual = tomo;
+            var btns = document.querySelectorAll('.tomo-btn');
+            btns[0].classList.toggle('active', tomo === 1);
+            btns[1].classList.toggle('active', tomo === 2);
+            renderizarCapitulos();
+            tocarSonido('click');
+        }
+
+        function renderizarCapitulos() {
+            var container = document.getElementById('capitulos-container');
+            container.innerHTML = '';
+            var tomoData = tomoActual === 1 ? CAPITULOS.tomo1 : CAPITULOS.tomo2;
+            var progreso = getProgreso();
+            var progresoTomo = tomoActual === 1 ? progreso.tomo1 : progreso.tomo2;
+            var calificaciones = getCalificaciones();
+            var diario = getDiario();
+            var section = document.createElement('div');
+            section.className = 'tomo-section';
+            section.innerHTML = '<h3>TOMO ' + tomoActual + ': ' + tomoData.titulo + '</h3>';
+            var lista = document.createElement('div');
+            lista.className = 'capitulos-list';
+            if (tomoData.prologo) {
+                var capId = 't' + tomoActual + '_p0';
+                var completado = progresoTomo.completados.indexOf(0) !== -1;
+                var tieneCalificacion = calificaciones[capId] ? true : false;
+                var tieneDiario = diario[capId] ? true : false;
+                var prologo = document.createElement('div');
+                prologo.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                prologo.textContent = 'PRÓLOGO' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
+                prologo.onclick = function() { marcarCapitulo(tomoActual, 0); };
+                lista.appendChild(prologo);
+            }
+            for (var i = 1; i <= tomoData.capitulos; i++) {
+                var capId = 't' + tomoActual + '_c' + i;
+                var completado = progresoTomo.completados.indexOf(i) !== -1;
+                var tieneCalificacion = calificaciones[capId] ? true : false;
+                var tieneDiario = diario[capId] ? true : false;
+                var cap = document.createElement('div');
+                cap.className = 'capitulo-item' + (completado ? ' completed' : '');
+                cap.textContent = 'CAP. ' + i + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
+                cap.onclick = (function(num) { return function() { marcarCapitulo(tomoActual, num); }; })(i);
+                lista.appendChild(cap);
+            }
+            if (tomoData.epilogue) {
+                var capId = 't' + tomoActual + '_epi';
+                var completado = progresoTomo.epilogue;
+                var tieneCalificacion = calificaciones[capId] ? true : false;
+                var tieneDiario = diario[capId] ? true : false;
+                var epilogue = document.createElement('div');
+                epilogue.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                epilogue.textContent = 'EPÍLOGO' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
+                epilogue.onclick = function() { marcarCapitulo(tomoActual, 'epilogue'); };
+                lista.appendChild(epilogue);
+            }
+            if (tomoData.extra) {
+                var capId = 't' + tomoActual + '_extra';
+                var completado = progresoTomo.extra;
+                var tieneCalificacion = calificaciones[capId] ? true : false;
+                var tieneDiario = diario[capId] ? true : false;
+                var extra = document.createElement('div');
+                extra.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                extra.textContent = 'ESCENA EXTRA' + (tieneCalificacion ? ' ★' : '') + (tieneDiario ? ' 📝' : '');
+                extra.onclick = function() { marcarCapitulo(tomoActual, 'extra'); };
+                lista.appendChild(extra);
+            }
+            section.appendChild(lista);
+            container.appendChild(section);
+            actualizarProgresoGlobal();
+        }
+
+        function renderizarTablero() {
+            var progreso = getProgreso();
+            var culpableData = getCulpable();
+            var evidenciasPerfiles = getEvidenciasPerfiles();
+            var capitulosT2 = progreso.tomo2.completados.length;
+            var totalT2 = CAPITULOS.tomo2.capitulos;
+            var porcentajeT2 = Math.round((capitulosT2 / totalT2) * 100);
+            document.getElementById('progreso-t2-texto').textContent = capitulosT2 + '/' + totalT2;
+            document.getElementById('progreso-t2-barra').style.width = porcentajeT2 + '%';
+            if (capitulosT2 >= 22 && !culpableData.bloqueado) {
+                document.getElementById('mensaje-culpable').style.display = 'block';
+            }
+            document.getElementById('buscador-input').value = '';
+            document.getElementById('buscador-sugerencias').classList.add('hidden');
+            document.getElementById('buscador-resultado').classList.add('hidden');
+            var container = document.getElementById('evidencias-por-perfil-container');
+            container.innerHTML = '';
+            CULPABLES_POSIBLES.forEach(function(culp) {
+                var perfilId = culp.id;
+                var evidencias = evidenciasPerfiles[perfilId] || [];
+                var perfilDiv = document.createElement('div');
+                perfilDiv.className = 'perfil-evidencia-container';
+                var headerHTML = '<div class="perfil-evidencia-header"><img src="' + CONFIG.rutaImagenes + culp.imagen + '" alt="' + culp.nombre + '"><div><h4>' + culp.nombre + '</h4><p class="evidencia-counter">' + evidencias.length + '/5 evidencias</p></div></div>';
+                var evidenciasHTML = '<div class="evidencia-lista-perfil">';
+                evidencias.forEach(function(ev, index) {
+                    evidenciasHTML += '<div class="evidencia-item-perfil' + (ev.completado ? ' completed' : '') + '"><div class="evidencia-checkbox-perfil" onclick="toggleEvidenciaPerfil(\'' + perfilId + '\', ' + index + ')"></div><input type="text" class="evidencia-input-perfil" value="' + ev.texto + '" onchange="actualizarEvidenciaPerfil(\'' + perfilId + '\', ' + index + ', this.value)" ' + (culpableData.bloqueado ? 'disabled' : '') + '><button class="evidencia-delete-btn" onclick="eliminarEvidenciaPerfil(\'' + perfilId + '\', ' + index + ')" ' + (culpableData.bloqueado ? 'disabled style="opacity:0.5"' : '') + '>X</button></div>';
+                });
+                evidenciasHTML += '</div>';
+                if (!culpableData.bloqueado && evidencias.length < 5) {
+                    evidenciasHTML += '<button class="evidencia-add-btn-perfil" onclick="agregarEvidenciaPerfil(\'' + perfilId + '\')">+ AÑADIR EVIDENCIA</button>';
+                }
+                if (culpableData.bloqueado) {
+                    evidenciasHTML += '<p class="evidencia-bloqueado-msg">🔒 Evidencias bloqueadas - Culpable confirmado</p>';
+                }
+                perfilDiv.innerHTML = headerHTML + evidenciasHTML;
+                container.appendChild(perfilDiv);
+            });
+            var culpableGrid = document.getElementById('culpable-grid');
+            culpableGrid.innerHTML = '';
+            CULPABLES_POSIBLES.forEach(function(culp) {
+                var card = document.createElement('div');
+                card.className = 'culpable-card';
+                if (culpableData.bloqueado) {
+                    card.classList.add('locked');
+                    if (culp.id === culpableData.culpable) { card.classList.add('selected-culpable'); }
+                    else if (culpableData.sospechosos.indexOf(culp.id) !== -1) { card.classList.add('selected-sospechoso'); }
+                }
+                card.innerHTML = '<img src="' + CONFIG.rutaImagenes + culp.imagen + '" alt="' + culp.nombre + '"><h4>' + culp.nombre + '</h4>';
+                if (!culpableData.bloqueado) { card.onclick = function() { seleccionarCulpable(culp.id); }; }
+                culpableGrid.appendChild(card);
+            });
+            document.getElementById('culpable-seleccionado').textContent = culpableData.culpable ? CULPABLES_POSIBLES.find(c => c.id === culpableData.culpable).nombre : 'Ninguno';
+            document.getElementById('sospechosos-seleccionados').textContent = culpableData.sospechosos.length > 0 ? culpableData.sospechosos.map(id => CULPABLES_POSIBLES.find(c => c.id === id).nombre).join(', ') : 'Ninguno';
+        }
+
+        function buscarSujeto() {
+            var input = document.getElementById('buscador-input').value.toLowerCase();
+            var sugerenciasContainer = document.getElementById('buscador-sugerencias');
+            var resultadoContainer = document.getElementById('buscador-resultado');
+            var resultadoInfo = document.getElementById('buscador-info');
+            if (input.length < 2) { sugerenciasContainer.classList.add('hidden'); resultadoContainer.classList.add('hidden'); return; }
+            var coincidencias = PERFILES.filter(function(p) { return p.nombre.toLowerCase().includes(input) && !p.esNoir; });
+            if (coincidencias.length > 0) {
+                sugerenciasContainer.innerHTML = '';
+                coincidencias.forEach(function(p) {
+                    var item = document.createElement('div');
+                    item.className = 'sugerencia-item';
+                    item.textContent = p.nombre + ' - ' + p.rol;
+                    item.onclick = function() { document.getElementById('buscador-input').value = p.nombre; sugerenciasContainer.classList.add('hidden'); resultadoContainer.classList.remove('hidden'); resultadoInfo.textContent = p.nombre + ': ' + p.descripcion; };
+                    sugerenciasContainer.appendChild(item);
+                });
+                sugerenciasContainer.classList.remove('hidden');
+            } else { sugerenciasContainer.classList.add('hidden'); }
+        }
+
+        function agregarEvidenciaPerfil(perfilId) {
+            var evidencias = getEvidenciasPerfiles();
+            if (!evidencias[perfilId]) { evidencias[perfilId] = []; }
+            if (evidencias[perfilId].length >= 5) { alert('Máximo 5 evidencias por perfil'); return; }
+            evidencias[perfilId].push({ texto: '', completado: false });
+            guardarEvidenciasPerfiles(evidencias);
+            renderizarTablero();
+            tocarSonido('click');
+        }
+
+        function toggleEvidenciaPerfil(perfilId, index) {
+            var evidencias = getEvidenciasPerfiles();
+            if (evidencias[perfilId] && evidencias[perfilId][index]) {
+                evidencias[perfilId][index].completado = !evidencias[perfilId][index].completado;
+                guardarEvidenciasPerfiles(evidencias);
+                renderizarTablero();
+                tocarSonido('click');
+            }
+        }
+
+        function actualizarEvidenciaPerfil(perfilId, index, valor) {
+            var evidencias = getEvidenciasPerfiles();
+            if (evidencias[perfilId] && evidencias[perfilId][index]) {
+                evidencias[perfilId][index].texto = valor;
+                guardarEvidenciasPerfiles(evidencias);
+            }
+        }
+
+        function eliminarEvidenciaPerfil(perfilId, index) {
+            var evidencias = getEvidenciasPerfiles();
+            if (evidencias[perfilId]) { evidencias[perfilId].splice(index, 1); guardarEvidenciasPerfiles(evidencias); renderizarTablero(); tocarSonido('click'); }
+        }
+
+        function seleccionarCulpable(id) {
+            var culpableData = getCulpable();
+            if (culpableData.bloqueado) { return; }
+            if (culpableData.culpable === null) {
+                culpableData.culpable = id;
+                guardarCulpable(culpableData);
+                tocarSonido('reveal');
+                alert('⚠️ Has seleccionado a ' + CULPABLES_POSIBLES.find(c => c.id === id).nombre + ' como CULPABLE.\n\nPuedes añadir hasta 2 SOSPECHOSOS adicionales.\n\nHaz click en el culpable de nuevo para CONFIRMAR.');
+            } else if (culpableData.culpable === id) {
+                culpableData.bloqueado = true;
+                guardarCulpable(culpableData);
+                tocarSonido('reveal');
+                alert('✅ Selección CONFIRMADA. Las evidencias se han bloqueado. Esto es PERMANENTE.');
+            } else if (culpableData.sospechosos.length < 2 && culpableData.sospechosos.indexOf(id) === -1) {
+                culpableData.sospechosos.push(id);
+                guardarCulpable(culpableData);
+                tocarSonido('click');
+            } else if (culpableData.sospechosos.indexOf(id) !== -1) {
+                culpableData.sospechosos.splice(culpableData.sospechosos.indexOf(id), 1);
+                guardarCulpable(culpableData);
+                tocarSonido('click');
+            }
+            renderizarTablero();
+        }
+
+        function mostrarPopupSistema(mensaje) {
+            if (document.getElementById('popup-overlay')) { document.getElementById('popup-overlay').remove(); }
+            if (document.getElementById('popup-sistema')) { document.getElementById('popup-sistema').remove(); }
+            var overlay = document.createElement('div');
+            overlay.id = 'popup-overlay';
+            overlay.className = 'popup-overlay';
+            var popup = document.createElement('div');
+            popup.id = 'popup-sistema';
+            popup.className = 'popup-sistema';
+            popup.innerHTML = '<h2 style="color: var(--blue-neon); margin-bottom: 20px; font-size: 16px;">⚠️ SISTEMA</h2><p style="color: var(--green-matrix); margin-bottom: 25px; line-height: 1.8; white-space: pre-line; font-size: 13px;">' + mensaje + '</p><button id="popup-cerrar-btn" style="width: auto; padding: 10px 30px; font-size: 12px; border-color: var(--green-matrix); color: var(--green-matrix);">ENTENDIDO</button>';
+            document.body.appendChild(overlay);
+            document.body.appendChild(popup);
+            document.getElementById('popup-cerrar-btn').addEventListener('click', function() {
+                if (document.getElementById('popup-overlay')) { document.getElementById('popup-overlay').remove(); }
+                if (document.getElementById('popup-sistema')) { document.getElementById('popup-sistema').remove(); }
+            });
+            tocarSonido('unlock');
+        }
+
+        function mostrarMensajeFinal() {
+            var mensajeVisto = localStorage.getItem(CONFIG.claveMensajeFinalVisto);
+            if (mensajeVisto === 'true') return;
+            var culpableData = getCulpable();
+            var usuario = localStorage.getItem(CONFIG.claveUsuario);
+            var acerto = culpableData.culpable && CULPABLES_REALES.indexOf(culpableData.culpable) !== -1;
+            var contenido = document.getElementById('mensaje-final-contenido');
+            contenido.innerHTML = '<p>Estado: COMPLETADO</p><p>Investigador: ' + usuario + '</p><br><p>En Raven\'s Ridge, el precio de la misericordia se paga con ojos y lenguas, con sangre y cenizas. Y tú... escogiste pagar para seguir el rastro hasta el final.</p><br>' + (acerto ? '<p class="acierto">Sabías que era Ainsley (Mente Maestra), Eliott (Ejecutor) y Bridget (Peón) desde el principio.</p>' : '<p class="fallo">El amor te cegó..., como a todos.<br>No te preocupes, algunos secretos se guardan para proteger.<br>Otros... para sobrevivir.</p>') + '<br><p>— Archivo Raven\'s Ridge, CERRADO —</p><br><p>Continúa hasta el final. Hay algo para ti.</p>';
+            document.getElementById('mensaje-final-modal').classList.remove('hidden');
+            localStorage.setItem(CONFIG.claveMensajeFinalVisto, 'true');
+            tocarSonido('reveal');
+        }
+
+        function cerrarMensajeFinal() {
+            document.getElementById('mensaje-final-modal').classList.add('hidden');
+            tocarSonido('click');
+        }
+
+        function abrirCalificacion(tomo, cap) {
+            var capId = 't' + tomo + '_' + (cap === 'epilogue' ? 'epi' : cap === 'extra' ? 'extra' : cap === 0 ? 'p0' : 'c' + cap);
+            var calificaciones = getCalificaciones();
+            var calificacionExistente = calificaciones[capId];
+            capituloActualCalificacion = capId;
+            calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 };
+            if (calificacionExistente) { calificacionTemporal = calificacionExistente; }
+            var tituloCap = cap === 0 ? 'PRÓLOGO' : cap === 'epilogue' ? 'EPÍLOGO' : cap === 'extra' ? 'ESCENA EXTRA' : 'CAP. ' + cap;
+            document.getElementById('rating-capitulo-titulo').textContent = 'TOMO ' + tomo + ' - ' + tituloCap;
+            actualizarEstrellasVisuales('calidad', calificacionTemporal.calidad);
+            actualizarEstrellasVisuales('spicy', calificacionTemporal.spicy);
+            actualizarEstrellasVisuales('misterio', calificacionTemporal.misterio);
+            configurarListenersEstrellas('calidad');
+            configurarListenersEstrellas('spicy');
+            configurarListenersEstrellas('misterio');
+            document.getElementById('rating-modal').classList.remove('hidden');
+            tocarSonido('unlock');
+        }
+
+        function configurarListenersEstrellas(categoria) {
+            var container = document.getElementById(categoria + '-stars');
+            var buttons = container.querySelectorAll('.star-btn');
+            buttons.forEach(function(btn) {
+                var newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                newBtn.addEventListener('click', function() {
+                    var value = parseInt(this.getAttribute('data-value'));
+                    calificacionTemporal[categoria] = value;
+                    actualizarEstrellasVisuales(categoria, value);
+                    tocarSonido('rating');
+                });
+                newBtn.addEventListener('mouseenter', function() {
+                    var value = parseInt(this.getAttribute('data-value'));
+                    resaltarEstrellas(categoria, value);
+                });
+                newBtn.addEventListener('mouseleave', function() {
+                    actualizarEstrellasVisuales(categoria, calificacionTemporal[categoria]);
+                });
+            });
+        }
+
+        function resaltarEstrellas(categoria, hasta) {
+            var container = document.getElementById(categoria + '-stars');
+            var buttons = container.querySelectorAll('.star-btn');
+            buttons.forEach(function(btn, index) {
+                if (index < hasta) { btn.textContent = '★'; btn.style.color = 'var(--blue-neon)'; }
+                else { btn.textContent = '☆'; btn.style.color = 'var(--green-matrix)'; }
+            });
+        }
+
+        function actualizarEstrellasVisuales(categoria, valor) {
+            var container = document.getElementById(categoria + '-stars');
+            var buttons = container.querySelectorAll('.star-btn');
+            buttons.forEach(function(btn, index) {
+                if (index < valor) { btn.textContent = '★'; btn.style.color = 'var(--blue-neon)'; btn.classList.add('active'); setTimeout(function() { btn.classList.remove('active'); }, 300); }
+                else { btn.textContent = '☆'; btn.style.color = 'var(--green-matrix)'; }
+            });
+        }
+
+        function guardarCalificacion() {
+            if (!capituloActualCalificacion) return;
+            var calificaciones = getCalificaciones();
+            calificaciones[capituloActualCalificacion] = calificacionTemporal;
+            guardarCalificaciones(calificaciones);
+            cerrarCalificacion();
+            renderizarCapitulos();
+            tocarSonido('chapter');
+        }
+
+        function cerrarCalificacion() {
+            document.getElementById('rating-modal').classList.add('hidden');
+            capituloActualCalificacion = null;
+            calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 };
+        }
+
+        function tieneCapitulo(progreso, tomo, cap) {
+            if (tomo === 1) { return progreso.tomo1.completados.indexOf(cap) !== -1; }
+            else { return progreso.tomo2.completados.indexOf(cap) !== -1; }
+        }
+
+        function renderizarPerfiles() {
+            var grid = document.getElementById('profiles-grid');
+            grid.innerHTML = '';
+            var noirDesbloqueado = localStorage.getItem(CONFIG.claveNoirDesbloqueado) === 'true';
+            var progreso = getProgreso();
+            for (var i = 0; i < PERFILES.length; i++) {
+                var p = PERFILES[i];
+                if (p.esNoir && !noirDesbloqueado) continue;
+                var imagen = obtenerImagenPerfil(p, progreso);
+                var bloqueado = p.bloqueado && !p.esNoir;
+                var card = document.createElement('div');
+                card.className = 'profile-card' + (bloqueado ? ' locked' : '');
+                (function(perfil, imgSrc) {
+                    card.onclick = function() {
+                        if (!bloqueado) { tocarSonido('click'); abrirPerfil(perfil.id, imgSrc, progreso); }
+                        else { tocarSonido('error'); }
+                    };
+                })(p, imagen);
+                card.innerHTML = '<div class="status-indicator"></div><div class="image-container"><img src="' + imagen + '" alt="' + p.nombre + '"></div><h3>' + p.nombre + '</h3><p>' + p.rol + '</p>' + (bloqueado ? '<p style="color: var(--red-blood); margin-top: 10px;">BLOQUEADO</p>' : '');
+                grid.appendChild(card);
+            }
+        }
+
+        function obtenerImagenPerfil(perfil, progreso) {
+            if (perfil.esNoir) return CONFIG.rutaImagenes + perfil.imagen;
+            if (perfil.id === 'PERFIL_00_MORWYN') return CONFIG.rutaImagenes + perfil.imagen;
+            if (perfil.id === 'PERFIL_07_HARLAN') return CONFIG.rutaImagenes + perfil.imagen;
+            if (perfil.id === 'PERFIL_04_CASSIDY') {
+                if (tieneCapitulo(progreso, 2, 16)) return CONFIG.rutaImagenes + perfil.imagenFinal;
+                if (tieneCapitulo(progreso, 2, 14)) return CONFIG.rutaImagenes + perfil.imagenGlitch;
+                return CONFIG.rutaImagenes + perfil.imagen;
+            }
+            if (perfil.id === 'PERFIL_03_AINSLEY') {
+                if (tieneCapitulo(progreso, 2, 26)) return CONFIG.rutaImagenes + perfil.imagenFinal;
+                return CONFIG.rutaImagenes + perfil.imagen;
+            }
+            if (perfil.id === 'PERFIL_05_ELIOTT' || perfil.id === 'PERFIL_06_BRIDGET') {
+                if (tieneCapitulo(progreso, 2, 27)) return CONFIG.rutaImagenes + perfil.imagenFinal;
+                return CONFIG.rutaImagenes + perfil.imagen;
+            }
+            if (perfil.id === 'PERFIL_01_DRAKE' || perfil.id === 'PERFIL_02_KILLIAN') {
+                if (progreso.tomo2.epilogue) return CONFIG.rutaImagenes + perfil.imagenFinal;
+                return CONFIG.rutaImagenes + perfil.imagen;
+            }
+            return CONFIG.rutaImagenes + perfil.imagen;
+        }
+
+        function abrirPerfil(id, imagenSrc, progreso) {
+            morwynRevelado = false;
+            harlanRevelado = false;
+            for (var i = 0; i < PERFILES.length; i++) {
+                if (PERFILES[i].id === id) { perfilActual = PERFILES[i]; break; }
+            }
+            if (!perfilActual) return;
+            document.getElementById('detalle-nombre').textContent = perfilActual.nombre;
+            document.getElementById('detalle-nombre-completo').textContent = perfilActual.nombre;
+            document.getElementById('detalle-rol').textContent = perfilActual.rol;
+            var imageContainer = document.getElementById('detalle-image-container');
+            var detalleImg = document.getElementById('detalle-imagen');
+            var flipHint = document.getElementById('flip-hint');
+            var revealMsg = document.getElementById('reveal-message');
+            var estadoDiv = document.getElementById('detalle-estado');
+            var descripcionDiv = document.getElementById('detalle-descripcion');
+            imageContainer.classList.remove('reveal-ready');
+            imageContainer.classList.remove('cassidy-glitch');
+            flipHint.classList.add('hidden');
+            revealMsg.classList.add('hidden');
+            revealMsg.textContent = '';
+            imageContainer.onclick = null;
+            estadoDiv.textContent = 'ACTIVO';
+            estadoDiv.classList.remove('fixed');
+            if (perfilActual.id === 'PERFIL_04_CASSIDY') {
+                if (tieneCapitulo(progreso, 2, 14) && !tieneCapitulo(progreso, 2, 16)) { imageContainer.classList.add('cassidy-glitch'); detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenGlitch; estadoDiv.textContent = 'DESAPARECIDA'; estadoDiv.classList.add('fixed'); }
+                else if (tieneCapitulo(progreso, 2, 16)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'MUERTA'; estadoDiv.classList.add('fixed'); }
+                else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVA'; estadoDiv.classList.remove('fixed'); }
+                descripcionDiv.textContent = perfilActual.descripcion;
+            }
+            else if (perfilActual.id === 'PERFIL_00_MORWYN' && perfilActual.tieneRevelacion) {
+                var puedeRevelar = tieneCapitulo(progreso, 2, 26);
+                if (puedeRevelar) {
+                    imageContainer.classList.add('reveal-ready');
+                    flipHint.classList.remove('hidden');
+                    imageContainer.onclick = function() {
+                        if (!morwynRevelado) {
+                            morwynRevelado = true;
+                            detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenRevelada;
+                            tocarSonido('reveal');
+                            revealMsg.textContent = 'ALIAS CONFIRMADO - SUJETO: AINSLEY MACALLISTER';
+                            revealMsg.classList.remove('hidden');
+                            estadoDiv.textContent = 'ALIAS CONFIRMADO: AINSLEY';
+                            estadoDiv.classList.add('fixed');
+                            flipHint.classList.add('hidden');
+                            imageContainer.classList.remove('reveal-ready');
+                        }
+                    };
+                }
+                detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen;
+                descripcionDiv.textContent = perfilActual.descripcion;
+            }
+            else if (perfilActual.id === 'PERFIL_07_HARLAN' && perfilActual.tieneRevelacion) {
+                var puedeRevelar = tieneCapitulo(progreso, 2, 6);
+                if (puedeRevelar) {
+                    imageContainer.classList.add('reveal-ready');
+                    flipHint.classList.remove('hidden');
+                    flipHint.textContent = 'Click para revelar identidad';
+                    imageContainer.onclick = function() {
+                        if (!harlanRevelado) {
+                            harlanRevelado = true;
+                            detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenRevelada;
+                            tocarSonido('reveal');
+                            revealMsg.textContent = 'IDENTIDAD REVELADA: MICAH LANCASTER';
+                            revealMsg.classList.remove('hidden');
+                            estadoDiv.textContent = 'ENCUBIERTO';
+                            estadoDiv.classList.add('fixed');
+                            flipHint.classList.add('hidden');
+                            imageContainer.classList.remove('reveal-ready');
+                        }
+                    };
+                }
+                detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen;
+                var descripcionBase = perfilActual.descripcion;
+                if (harlanRevelado && perfilActual.descripcionSecreta) { descripcionBase += perfilActual.descripcionSecreta; }
+                descripcionDiv.textContent = descripcionBase;
+            }
+            else if (perfilActual.id === 'PERFIL_03_AINSLEY') {
+                if (tieneCapitulo(progreso, 2, 26)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'MENTE MAESTRA'; estadoDiv.classList.add('fixed'); revealMsg.textContent = 'IDENTIDAD REVELADA - MORWYN SHADE'; revealMsg.classList.remove('hidden'); }
+                else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVA'; estadoDiv.classList.remove('fixed'); }
+                descripcionDiv.textContent = perfilActual.descripcion;
+            }
+            else if (perfilActual.id === 'PERFIL_05_ELIOTT') {
+                if (tieneCapitulo(progreso, 2, 27)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'EJECUTOR'; estadoDiv.classList.add('fixed'); }
+                else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVO'; estadoDiv.classList.remove('fixed'); }
+                descripcionDiv.textContent = perfilActual.descripcion;
+            }
+            else if (perfilActual.id === 'PERFIL_06_BRIDGET') {
+                if (tieneCapitulo(progreso, 2, 27)) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; estadoDiv.textContent = 'PEÓN'; estadoDiv.classList.add('fixed'); }
+                else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; estadoDiv.textContent = 'ACTIVA'; estadoDiv.classList.remove('fixed'); }
+                descripcionDiv.textContent = perfilActual.descripcion;
+            }
+            else if (perfilActual.id === 'PERFIL_01_DRAKE' || perfilActual.id === 'PERFIL_02_KILLIAN') {
+                if (progreso.tomo2.epilogue) { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagenFinal; }
+                else { detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen; }
+                estadoDiv.textContent = 'ACTIVO';
+                estadoDiv.classList.remove('fixed');
+                descripcionDiv.textContent = perfilActual.descripcion;
+            }
+            else if (perfilActual.esNoir) {
+                detalleImg.src = CONFIG.rutaImagenes + perfilActual.imagen;
+                estadoDiv.textContent = 'BLOQUEADO';
+                estadoDiv.classList.add('fixed');
+                descripcionDiv.textContent = perfilActual.descripcion;
+            }
+            else {
+                if (perfilActual.imagen && perfilActual.imagen.includes('.mp4')) { detalleImg.outerHTML = '<video id="detalle-imagen" src="' + CONFIG.rutaImagenes + perfilActual.imagen + '" muted autoplay loop style="max-width:100%; max-height:100%; object-fit:contain;"></video>'; }
+                else { detalleImg.src = imagenSrc || CONFIG.rutaImagenes + perfilActual.imagen; }
+                descripcionDiv.textContent = perfilActual.descripcion;
+            }
+            var tagsSection = document.getElementById('tags-section');
+            var tagFijo = document.getElementById('detalle-tag-fijo');
+            var selectEtiquetas = document.getElementById('etiquetas-select');
+            var tieneEtiquetaFija = false;
+            var etiquetaFijaValor = null;
+            if (perfilActual.id === 'PERFIL_04_CASSIDY' && tieneCapitulo(progreso, 2, 16)) { tieneEtiquetaFija = true; etiquetaFijaValor = 'MUERTA'; }
+            else if (perfilActual.id === 'PERFIL_05_ELIOTT' && tieneCapitulo(progreso, 2, 27)) { tieneEtiquetaFija = true; etiquetaFijaValor = 'EJECUTOR'; }
+            else if (perfilActual.id === 'PERFIL_06_BRIDGET' && tieneCapitulo(progreso, 2, 27)) { tieneEtiquetaFija = true; etiquetaFijaValor = 'PEÓN'; }
+            else if (perfilActual.id === 'PERFIL_03_AINSLEY' && tieneCapitulo(progreso, 2, 26)) { tieneEtiquetaFija = true; etiquetaFijaValor = 'MENTE MAESTRA'; }
+            else if (perfilActual.id === 'PERFIL_07_HARLAN' && tieneCapitulo(progreso, 2, 6) && harlanRevelado) { tieneEtiquetaFija = true; etiquetaFijaValor = 'ENCUBIERTO'; }
+            else if (perfilActual.id === 'PERFIL_00_MORWYN' && tieneCapitulo(progreso, 2, 26) && morwynRevelado) { tieneEtiquetaFija = true; etiquetaFijaValor = 'ALIAS CONFIRMADO: AINSLEY'; }
+            else if (perfilActual.etiquetaFija) { tieneEtiquetaFija = true; etiquetaFijaValor = perfilActual.etiquetaFija; }
+            if (tieneEtiquetaFija) { tagsSection.classList.add('hidden'); tagFijo.classList.remove('hidden'); tagFijo.textContent = etiquetaFijaValor; }
+            else if (!perfilActual.editable) { tagsSection.classList.add('hidden'); tagFijo.classList.add('hidden'); }
+            else {
+                tagsSection.classList.remove('hidden');
+                tagFijo.classList.add('hidden');
+                var guardadas = localStorage.getItem('rr_etiquetas_' + perfilActual.id);
+                var etiquetasGuardadas = guardadas ? JSON.parse(guardadas) : [];
+                for (var j = 0; j < selectEtiquetas.options.length; j++) { selectEtiquetas.options[j].selected = (etiquetasGuardadas.indexOf(selectEtiquetas.options[j].value) !== -1); }
+                actualizarSeleccionadas();
+            }
+            var notas = localStorage.getItem('rr_notas_' + perfilActual.id) || '';
+            document.getElementById('detalle-notas').value = notas;
+            mostrarPantalla('pantalla-perfil-detalle');
+            tocarSonido('unlock');
+        }
+
+        function actualizarSeleccionadas() {
+            var select = document.getElementById('etiquetas-select');
+            var container = document.getElementById('tags-seleccionadas');
+            container.innerHTML = '';
+            var seleccionadas = [];
+            for (var i = 0; i < select.options.length; i++) { if (select.options[i].selected) seleccionadas.push(select.options[i].value); }
+            if (seleccionadas.length === 0) { container.innerHTML = '<span style="color: var(--green-matrix); font-size: 10px;">Sin etiquetas seleccionadas</span>'; return; }
+            for (var i = 0; i < seleccionadas.length; i++) {
+                var tagId = seleccionadas[i];
+                var tagLabel = ETIQUETAS_MAP[tagId] || tagId;
+                var tagItem = document.createElement('span');
+                tagItem.className = 'tag-item';
+                tagItem.innerHTML = tagLabel + ' <span class="remove-tag" onclick="removerEtiqueta(\'' + tagId + '\')">x</span>';
+                container.appendChild(tagItem);
+            }
+        }
+
+        function removerEtiqueta(id) {
+            var select = document.getElementById('etiquetas-select');
+            for (var i = 0; i < select.options.length; i++) { if (select.options[i].value === id) { select.options[i].selected = false; break; } }
+            tocarSonido('click');
+            actualizarSeleccionadas();
+        }
+
+        function guardarYVolver() {
+            var tagsSection = document.getElementById('tags-section');
+            if (!tagsSection.classList.contains('hidden') && perfilActual && perfilActual.editable) {
+                var select = document.getElementById('etiquetas-select');
+                var seleccionadas = [];
+                for (var i = 0; i < select.options.length; i++) { if (select.options[i].selected) seleccionadas.push(select.options[i].value); }
+                localStorage.setItem('rr_etiquetas_' + perfilActual.id, JSON.stringify(seleccionadas));
+            }
+            if (perfilActual) { var notas = document.getElementById('detalle-notas').value; localStorage.setItem('rr_notas_' + perfilActual.id, notas); }
+            tocarSonido('click');
+            mostrarPantalla('pantalla-perfiles');
+        }
+
+        function mostrarRecompensaNoir() {
+            tocarSonido('noir');
+            setTimeout(function() { tocarSonido('celebration'); }, 1000);
+            document.getElementById('pantalla-noir-reward').classList.remove('hidden');
+        }
+
+        function cerrarNoirReward() {
+            document.getElementById('pantalla-noir-reward').classList.add('hidden');
+            tocarSonido('click');
+        }
+
+        function renderizarDiario() {
+            document.getElementById('diario-capitulo-seleccionado').textContent = 'Ninguno';
+            document.getElementById('diario-editor').innerHTML = '';
+            capituloDiarioActual = null;
+            renderizarCapitulosDiario();
+        }
+
+        function cambiarTomoDiario(tomo) {
+            tomoDiarioActual = tomo;
+            var btns = document.querySelectorAll('#pantalla-diario .tomo-btn');
+            btns[0].classList.toggle('active', tomo === 1);
+            btns[1].classList.toggle('active', tomo === 2);
+            renderizarCapitulosDiario();
+            tocarSonido('click');
+        }
+
+        function renderizarCapitulosDiario() {
+            var container = document.getElementById('diario-capitulos-lista');
+            container.innerHTML = '';
+            var tomoData = tomoDiarioActual === 1 ? CAPITULOS.tomo1 : CAPITULOS.tomo2;
+            var progreso = getProgreso();
+            var progresoTomo = tomoDiarioActual === 1 ? progreso.tomo1 : progreso.tomo2;
+            var diario = getDiario();
+            if (tomoData.prologo) {
+                var capId = 't' + tomoDiarioActual + '_p0';
+                var completado = progresoTomo.completados.indexOf(0) !== -1;
+                var tieneEntrada = diario[capId] ? true : false;
+                var cap = document.createElement('div');
+                cap.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                cap.textContent = 'PRÓLOGO' + (tieneEntrada ? ' 📝' : '');
+                cap.style.opacity = completado ? '1' : '0.5';
+                cap.style.cursor = completado ? 'pointer' : 'not-allowed';
+                if (completado) { cap.onclick = function() { seleccionarCapituloDiario(tomoDiarioActual, 0); }; }
+                container.appendChild(cap);
+            }
+            for (var i = 1; i <= tomoData.capitulos; i++) {
+                var capId = 't' + tomoDiarioActual + '_c' + i;
+                var completado = progresoTomo.completados.indexOf(i) !== -1;
+                var tieneEntrada = diario[capId] ? true : false;
+                var cap = document.createElement('div');
+                cap.className = 'capitulo-item' + (completado ? ' completed' : '');
+                cap.textContent = 'CAP. ' + i + (tieneEntrada ? ' 📝' : '');
+                cap.style.opacity = completado ? '1' : '0.5';
+                cap.style.cursor = completado ? 'pointer' : 'not-allowed';
+                if (completado) { cap.onclick = (function(num) { return function() { seleccionarCapituloDiario(tomoDiarioActual, num); }; })(i); }
+                container.appendChild(cap);
+            }
+            if (tomoData.epilogue) {
+                var capId = 't' + tomoDiarioActual + '_epi';
+                var completado = progresoTomo.epilogue;
+                var tieneEntrada = diario[capId] ? true : false;
+                var cap = document.createElement('div');
+                cap.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                cap.textContent = 'EPÍLOGO' + (tieneEntrada ? ' 📝' : '');
+                cap.style.opacity = completado ? '1' : '0.5';
+                cap.style.cursor = completado ? 'pointer' : 'not-allowed';
+                if (completado) { cap.onclick = function() { seleccionarCapituloDiario(tomoDiarioActual, 'epilogue'); }; }
+                container.appendChild(cap);
+            }
+            if (tomoData.extra) {
+                var capId = 't' + tomoDiarioActual + '_extra';
+                var completado = progresoTomo.extra;
+                var tieneEntrada = diario[capId] ? true : false;
+                var cap = document.createElement('div');
+                cap.className = 'capitulo-item special' + (completado ? ' completed' : '');
+                cap.textContent = 'EXTRA' + (tieneEntrada ? ' 📝' : '');
+                cap.style.opacity = completado ? '1' : '0.5';
+                cap.style.cursor = completado ? 'pointer' : 'not-allowed';
+                if (completado) { cap.onclick = function() { seleccionarCapituloDiario(tomoDiarioActual, 'extra'); }; }
+                container.appendChild(cap);
+            }
+        }
+
+        function seleccionarCapituloDiario(tomo, cap) {
+            var capId = 't' + tomo + '_' + (cap === 'epilogue' ? 'epi' : cap === 'extra' ? 'extra' : cap === 0 ? 'p0' : 'c' + cap);
+            capituloDiarioActual = capId;
+            var tituloCap = cap === 0 ? 'PRÓLOGO' : cap === 'epilogue' ? 'EPÍLOGO' : cap === 'extra' ? 'ESCENA EXTRA' : 'CAP. ' + cap;
+            document.getElementById('diario-capitulo-seleccionado').textContent = 'TOMO ' + tomo + ' - ' + tituloCap;
+            var diario = getDiario();
+            var contenido = diario[capId] || '';
+            document.getElementById('diario-editor').innerHTML = contenido;
+            document.getElementById('diario-guardado-indicador').classList.add('hidden');
+            tocarSonido('unlock');
+        }
+
+        function formatoDiario(comando) {
+            document.execCommand(comando, false, null);
+            document.getElementById('diario-editor').focus();
+            tocarSonido('click');
+        }
+
+        function limpiarFormatoDiario() {
+            document.execCommand('removeFormat', false, null);
+            document.getElementById('diario-editor').focus();
+            tocarSonido('click');
+        }
+
+        function guardarDiario() {
+            if (!capituloDiarioActual) { alert('⚠️ Selecciona un capítulo primero'); return; }
+            var contenido = document.getElementById('diario-editor').innerHTML;
+            guardarDiarioEntrada(capituloDiarioActual, contenido);
+            var indicador = document.getElementById('diario-guardado-indicador');
+            indicador.classList.remove('hidden');
+            setTimeout(function() { indicador.classList.add('hidden'); }, 3000);
+            renderizarCapitulosDiario();
+            tocarSonido('chapter');
+        }
+    </script>
+</body>
+</html>
