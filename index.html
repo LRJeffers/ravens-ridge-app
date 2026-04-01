@@ -689,21 +689,23 @@
         }
         .culpable-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
         }
         .culpable-card {
             border: 2px solid var(--green-matrix);
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             background: #050505;
+            border-radius: 5px;
         }
         .culpable-card:hover {
             border-color: var(--blue-neon);
             box-shadow: 0 0 15px var(--blue-neon);
+            transform: translateY(-2px);
         }
         .culpable-card.selected-culpable {
             border-color: var(--red-blood);
@@ -718,15 +720,15 @@
             cursor: not-allowed;
         }
         .culpable-card img {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             object-fit: cover;
             border-radius: 50%;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border: 2px solid var(--green-matrix);
         }
         .culpable-card h4 {
-            font-size: 12px;
+            font-size: 11px;
             font-family: var(--font-code);
         }
         .culpable-info {
@@ -795,53 +797,60 @@
             border-color: var(--green-matrix);
             color: var(--green-matrix);
         }
-        .perfil-evidencia-container {
+        .perfil-evidencia-card {
             border: 1px solid var(--green-matrix);
             padding: 15px;
-            margin-bottom: 20px;
             background: #050505;
+            border-radius: 5px;
         }
         .perfil-evidencia-header {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 1px solid var(--green-matrix);
         }
         .perfil-evidencia-header img {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             object-fit: cover;
             border-radius: 50%;
             border: 2px solid var(--green-matrix);
         }
         .perfil-evidencia-header h4 {
             color: var(--blue-neon);
-            font-size: 14px;
+            font-size: 12px;
             font-family: var(--font-code);
         }
         .evidencia-counter {
             color: var(--green-matrix);
-            font-size: 11px;
+            font-size: 10px;
             font-family: var(--font-code);
         }
-        .evidencia-lista-perfil {
+        .evidencias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        .evidencia-lista-mini {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px;
+            margin-bottom: 10px;
         }
-        .evidencia-item-perfil {
+        .evidencia-item-mini {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px;
+            gap: 5px;
+            padding: 5px;
             border: 1px solid var(--green-matrix);
             background: #0a0a0a;
+            font-size: 10px;
         }
-        .evidencia-checkbox-perfil {
-            width: 16px;
-            height: 16px;
+        .evidencia-checkbox-mini {
+            width: 14px;
+            height: 14px;
             border: 2px solid var(--green-matrix);
             display: flex;
             justify-content: center;
@@ -849,50 +858,43 @@
             flex-shrink: 0;
             cursor: pointer;
         }
-        .evidencia-item-perfil.completed .evidencia-checkbox-perfil {
+        .evidencia-item-mini.completed .evidencia-checkbox-mini {
             background: var(--green-matrix);
         }
-        .evidencia-item-perfil.completed .evidencia-checkbox-perfil::after {
+        .evidencia-item-mini.completed .evidencia-checkbox-mini::after {
             content: '✓';
             color: var(--bg-color);
             font-weight: bold;
-            font-size: 10px;
+            font-size: 8px;
         }
-        .evidencia-input-perfil {
+        .evidencia-input-mini {
             flex: 1;
             background: transparent;
             border: none;
             color: var(--green-matrix);
             font-family: var(--font-code);
-            font-size: 11px;
-            padding: 5px;
-        }
-        .evidencia-item-perfil.completed .evidencia-input-perfil {
-            color: var(--bg-color);
-        }
-        .evidencia-delete-btn {
-            width: auto;
-            padding: 3px 8px;
             font-size: 10px;
+            padding: 2px;
+        }
+        .evidencia-delete-btn-mini {
+            width: auto;
+            padding: 2px 6px;
+            font-size: 9px;
             margin: 0;
             border-color: var(--red-blood);
             color: var(--red-blood);
         }
-        .evidencia-delete-btn:hover {
-            background: var(--red-blood);
-            color: var(--bg-color);
-        }
-        .evidencia-add-btn-perfil {
-            width: auto;
-            padding: 8px 15px;
-            font-size: 11px;
-            margin-top: 10px;
+        .evidencia-add-btn-mini {
+            width: 100%;
+            padding: 6px;
+            font-size: 10px;
+            margin-top: 5px;
         }
         .evidencia-bloqueado-msg {
             color: var(--red-blood);
-            font-size: 11px;
+            font-size: 9px;
             font-family: var(--font-code);
-            margin-top: 10px;
+            margin-top: 8px;
             font-style: italic;
         }
         .diario-editor-container {
@@ -997,7 +999,6 @@
             background: var(--green-matrix);
             color: var(--bg-color);
         }
-        /* DIARIO: BUSCADOR Y LISTA COMPACTA */
         .diario-buscador-capitulos {
             margin-bottom: 15px;
         }
@@ -1028,7 +1029,6 @@
             background: var(--blue-neon);
             border-radius: 3px;
         }
-        /* CAPÍTULOS: BUSCADOR Y LISTA COMPACTA */
         .capitulos-buscador {
             margin-bottom: 15px;
         }
@@ -1222,11 +1222,9 @@
             <button class="tomo-btn active" onclick="cambiarTomo(1)">📖 LA SOMBRA DEL CUERVO</button>
             <button class="tomo-btn" onclick="cambiarTomo(2)">📖 MISA DE CENIZA</button>
         </div>
-        <!-- BUSCADOR DE CAPÍTULOS -->
         <div class="capitulos-buscador">
             <input type="text" id="capitulos-buscador-input" placeholder="🔍 Buscar capítulo (ej: '15', 'prólogo', 'epílogo')..." oninput="filtrarCapitulos()">
         </div>
-        <!-- LISTA CON SCROLL -->
         <div id="capitulos-container" class="capitulos-scroll"></div>
     </div>
 
@@ -1258,7 +1256,7 @@
         <div class="tablero-section">
             <h3>📁 EVIDENCIAS POR SOSPECHOSO</h3>
             <p style="color: var(--green-matrix); font-size: 11px; font-family: var(--font-code); margin-bottom: 15px;">Añade hasta 5 evidencias por perfil. Se bloquearán al confirmar tu culpable.</p>
-            <div id="evidencias-por-perfil-container"></div>
+            <div id="evidencias-por-perfil-container" class="evidencias-grid"></div>
         </div>
         <div class="culpable-section" id="culpable-section">
             <h3>⚠️ SELECCIONAR CULPABLE</h3>
@@ -1290,11 +1288,9 @@
                 <button class="tomo-btn active" onclick="cambiarTomoDiario(1)">📖 LA SOMBRA DEL CUERVO</button>
                 <button class="tomo-btn" onclick="cambiarTomoDiario(2)">📖 MISA DE CENIZA</button>
             </div>
-            <!-- BUSCADOR DE CAPÍTULOS EN DIARIO -->
             <div class="diario-buscador-capitulos">
                 <input type="text" id="diario-buscador-input" placeholder="🔍 Buscar capítulo (ej: '15', 'prólogo')..." oninput="filtrarCapitulosDiario()">
             </div>
-            <!-- LISTA CON SCROLL -->
             <div id="diario-capitulos-lista" class="diario-capitulos-scroll"></div>
         </div>
         <div class="diario-editor-container">
@@ -1605,9 +1601,6 @@
             var progreso = getProgreso(), progresoTomo = tomoActual === 1 ? progreso.tomo1 : progreso.tomo2;
             var calificaciones = getCalificaciones(), diario = getDiario();
             var filtro = document.getElementById('capitulos-buscador-input') ? document.getElementById('capitulos-buscador-input').value.toLowerCase() : '';
-            var section = document.createElement('div'); section.className = 'tomo-section';
-            section.innerHTML = '<h3>TOMO ' + tomoActual + ': ' + tomoData.titulo + '</h3>';
-            var lista = document.createElement('div'); lista.className = 'capitulos-list';
             if (tomoData.prologo) {
                 var capId = 't' + tomoActual + '_p0', completado = progresoTomo.completados.indexOf(0) !== -1;
                 var tieneCalificacion = calificaciones[capId] ? true : false, tieneDiario = diario[capId] ? true : false;
@@ -1615,7 +1608,7 @@
                 if (filtro === '' || textoCap.toLowerCase().includes(filtro)) {
                     var prologo = document.createElement('div'); prologo.className = 'capitulo-item special' + (completado ? ' completed' : '');
                     prologo.textContent = textoCap;
-                    prologo.onclick = function() { marcarCapitulo(tomoActual, 0); }; lista.appendChild(prologo);
+                    prologo.onclick = function() { marcarCapitulo(tomoActual, 0); }; container.appendChild(prologo);
                 }
             }
             for (var i = 1; i <= tomoData.capitulos; i++) {
@@ -1625,7 +1618,7 @@
                 if (filtro === '' || textoCap.toLowerCase().includes(filtro) || i.toString().includes(filtro)) {
                     var cap = document.createElement('div'); cap.className = 'capitulo-item' + (completado ? ' completed' : '');
                     cap.textContent = textoCap;
-                    cap.onclick = (function(num) { return function() { marcarCapitulo(tomoActual, num); }; })(i); lista.appendChild(cap);
+                    cap.onclick = (function(num) { return function() { marcarCapitulo(tomoActual, num); }; })(i); container.appendChild(cap);
                 }
             }
             if (tomoData.epilogue) {
@@ -1635,7 +1628,7 @@
                 if (filtro === '' || textoCap.toLowerCase().includes(filtro)) {
                     var epilogue = document.createElement('div'); epilogue.className = 'capitulo-item special' + (completado ? ' completed' : '');
                     epilogue.textContent = textoCap;
-                    epilogue.onclick = function() { marcarCapitulo(tomoActual, 'epilogue'); }; lista.appendChild(epilogue);
+                    epilogue.onclick = function() { marcarCapitulo(tomoActual, 'epilogue'); }; container.appendChild(epilogue);
                 }
             }
             if (tomoData.extra) {
@@ -1645,40 +1638,70 @@
                 if (filtro === '' || textoCap.toLowerCase().includes(filtro)) {
                     var extra = document.createElement('div'); extra.className = 'capitulo-item special' + (completado ? ' completed' : '');
                     extra.textContent = textoCap;
-                    extra.onclick = function() { marcarCapitulo(tomoActual, 'extra'); }; lista.appendChild(extra);
+                    extra.onclick = function() { marcarCapitulo(tomoActual, 'extra'); }; container.appendChild(extra);
                 }
             }
-            section.appendChild(lista); container.appendChild(section); actualizarProgresoGlobal();
+            actualizarProgresoGlobal();
         }
 
         function filtrarCapitulos() { renderizarCapitulos(); }
 
         function renderizarTablero() {
-            var progreso = getProgreso(), culpableData = getCulpable(), evidenciasPerfiles = getEvidenciasPerfiles();
-            var capitulosT2 = progreso.tomo2.completados.length, totalT2 = CAPITULOS.tomo2.capitulos;
+            var progreso = getProgreso();
+            var culpableData = getCulpable();
+            var evidenciasPerfiles = getEvidenciasPerfiles();
+            var capitulosT2 = progreso.tomo2.completados.length;
+            var totalT2 = CAPITULOS.tomo2.capitulos;
             var porcentajeT2 = Math.round((capitulosT2 / totalT2) * 100);
             document.getElementById('progreso-t2-texto').textContent = capitulosT2 + '/' + totalT2;
             document.getElementById('progreso-t2-barra').style.width = porcentajeT2 + '%';
             if (capitulosT2 >= 22 && !culpableData.bloqueado) { document.getElementById('mensaje-culpable').style.display = 'block'; }
-            document.getElementById('buscador-input').value = ''; document.getElementById('buscador-sugerencias').classList.add('hidden'); document.getElementById('buscador-resultado').classList.add('hidden');
-            var container = document.getElementById('evidencias-por-perfil-container'); container.innerHTML = '';
+            document.getElementById('buscador-input').value = '';
+            document.getElementById('buscador-sugerencias').classList.add('hidden');
+            document.getElementById('buscador-resultado').classList.add('hidden');
+            var container = document.getElementById('evidencias-por-perfil-container');
+            container.innerHTML = '';
             CULPABLES_POSIBLES.forEach(function(culp) {
-                var perfilId = culp.id, evidencias = evidenciasPerfiles[perfilId] || [];
-                var perfilDiv = document.createElement('div'); perfilDiv.className = 'perfil-evidencia-container';
-                var headerHTML = '<div class="perfil-evidencia-header"><img src="' + CONFIG.rutaImagenes + culp.imagen + '" alt="' + culp.nombre + '"><div><h4>' + culp.nombre + '</h4><p class="evidencia-counter">' + evidencias.length + '/5 evidencias</p></div></div>';
-                var evidenciasHTML = '<div class="evidencia-lista-perfil">';
+                var perfilId = culp.id;
+                var evidencias = evidenciasPerfiles[perfilId] || [];
+                var card = document.createElement('div');
+                card.className = 'perfil-evidencia-card';
+                var headerHTML = '<div class="perfil-evidencia-header">' +
+                    '<img src="' + CONFIG.rutaImagenes + culp.imagen + '" alt="' + culp.nombre + '">' +
+                    '<div>' +
+                    '<h4>' + culp.nombre + '</h4>' +
+                    '<p class="evidencia-counter">' + evidencias.length + '/5 evidencias</p>' +
+                    '</div></div>';
+                var evidenciasHTML = '<div class="evidencia-lista-mini">';
                 evidencias.forEach(function(ev, index) {
-                    evidenciasHTML += '<div class="evidencia-item-perfil' + (ev.completado ? ' completed' : '') + '"><div class="evidencia-checkbox-perfil" onclick="toggleEvidenciaPerfil(\'' + perfilId + '\', ' + index + ')"></div><input type="text" class="evidencia-input-perfil" value="' + ev.texto + '" onchange="actualizarEvidenciaPerfil(\'' + perfilId + '\', ' + index + ', this.value)" ' + (culpableData.bloqueado ? 'disabled' : '') + '><button class="evidencia-delete-btn" onclick="eliminarEvidenciaPerfil(\'' + perfilId + '\', ' + index + ')" ' + (culpableData.bloqueado ? 'disabled style="opacity:0.5"' : '') + '>X</button></div>';
-                }); evidenciasHTML += '</div>';
-                if (!culpableData.bloqueado && evidencias.length < 5) { evidenciasHTML += '<button class="evidencia-add-btn-perfil" onclick="agregarEvidenciaPerfil(\'' + perfilId + '\')">+ AÑADIR EVIDENCIA</button>'; }
-                if (culpableData.bloqueado) { evidenciasHTML += '<p class="evidencia-bloqueado-msg">🔒 Evidencias bloqueadas - Culpable confirmado</p>'; }
-                perfilDiv.innerHTML = headerHTML + evidenciasHTML; container.appendChild(perfilDiv);
+                    evidenciasHTML += '<div class="evidencia-item-mini' + (ev.completado ? ' completed' : '') + '">' +
+                        '<div class="evidencia-checkbox-mini" onclick="toggleEvidenciaPerfil(\'' + perfilId + '\', ' + index + ')"></div>' +
+                        '<input type="text" class="evidencia-input-mini" value="' + ev.texto + '" onchange="actualizarEvidenciaPerfil(\'' + perfilId + '\', ' + index + ', this.value)" ' + (culpableData.bloqueado ? 'disabled' : '') + '>' +
+                        '<button class="evidencia-delete-btn-mini" onclick="eliminarEvidenciaPerfil(\'' + perfilId + '\', ' + index + ')" ' + (culpableData.bloqueado ? 'disabled style="opacity:0.5"' : '') + '>X</button>' +
+                        '</div>';
+                });
+                evidenciasHTML += '</div>';
+                if (!culpableData.bloqueado && evidencias.length < 5) {
+                    evidenciasHTML += '<button class="evidencia-add-btn-mini" onclick="agregarEvidenciaPerfil(\'' + perfilId + '\')">+ AÑADIR</button>';
+                }
+                if (culpableData.bloqueado) {
+                    evidenciasHTML += '<p class="evidencia-bloqueado-msg">🔒 Bloqueado</p>';
+                }
+                card.innerHTML = headerHTML + evidenciasHTML;
+                container.appendChild(card);
             });
-            var culpableGrid = document.getElementById('culpable-grid'); culpableGrid.innerHTML = '';
+            var culpableGrid = document.getElementById('culpable-grid');
+            culpableGrid.innerHTML = '';
             CULPABLES_POSIBLES.forEach(function(culp) {
-                var card = document.createElement('div'); card.className = 'culpable-card';
-                if (culpableData.bloqueado) { card.classList.add('locked'); if (culp.id === culpableData.culpable) { card.classList.add('selected-culpable'); } else if (culpableData.sospechosos.indexOf(culp.id) !== -1) { card.classList.add('selected-sospechoso'); } }
-                card.innerHTML = '<img src="' + CONFIG.rutaImagenes + culp.imagen + '" alt="' + culp.nombre + '"><h4>' + culp.nombre + '</h4>';
+                var card = document.createElement('div');
+                card.className = 'culpable-card';
+                if (culpableData.bloqueado) {
+                    card.classList.add('locked');
+                    if (culp.id === culpableData.culpable) { card.classList.add('selected-culpable'); }
+                    else if (culpableData.sospechosos.indexOf(culp.id) !== -1) { card.classList.add('selected-sospechoso'); }
+                }
+                card.innerHTML = '<img src="' + CONFIG.rutaImagenes + culp.imagen + '" alt="' + culp.nombre + '">' +
+                    '<h4>' + culp.nombre + '</h4>';
                 if (!culpableData.bloqueado) { card.onclick = function() { seleccionarCulpable(culp.id); }; }
                 culpableGrid.appendChild(card);
             });
@@ -1688,16 +1711,21 @@
 
         function buscarSujeto() {
             var input = document.getElementById('buscador-input').value.toLowerCase();
-            var sugerenciasContainer = document.getElementById('buscador-sugerencias'), resultadoContainer = document.getElementById('buscador-resultado'), resultadoInfo = document.getElementById('buscador-info');
+            var sugerenciasContainer = document.getElementById('buscador-sugerencias');
+            var resultadoContainer = document.getElementById('buscador-resultado');
+            var resultadoInfo = document.getElementById('buscador-info');
             if (input.length < 2) { sugerenciasContainer.classList.add('hidden'); resultadoContainer.classList.add('hidden'); return; }
             var coincidencias = PERFILES.filter(function(p) { return p.nombre.toLowerCase().includes(input) && !p.esNoir; });
             if (coincidencias.length > 0) {
-                sugerenciasContainer.innerHTML = ''; coincidencias.forEach(function(p) {
-                    var item = document.createElement('div'); item.className = 'sugerencia-item';
+                sugerenciasContainer.innerHTML = '';
+                coincidencias.forEach(function(p) {
+                    var item = document.createElement('div');
+                    item.className = 'sugerencia-item';
                     item.textContent = p.nombre + ' - ' + p.rol;
                     item.onclick = function() { document.getElementById('buscador-input').value = p.nombre; sugerenciasContainer.classList.add('hidden'); resultadoContainer.classList.remove('hidden'); resultadoInfo.textContent = p.nombre + ': ' + p.descripcion; };
                     sugerenciasContainer.appendChild(item);
-                }); sugerenciasContainer.classList.remove('hidden');
+                });
+                sugerenciasContainer.classList.remove('hidden');
             } else { sugerenciasContainer.classList.add('hidden'); }
         }
 
