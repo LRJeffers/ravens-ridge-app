@@ -6,6 +6,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <title>Archivo Raven's Ridge</title>
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="assets/images/noir_1.png">
+    <link rel="apple-touch-icon" href="assets/images/noir_1.png">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -571,6 +574,8 @@
             max-width: 500px;
             width: 90%;
             box-shadow: 0 0 30px var(--blue-neon);
+            max-height: 90vh;
+            overflow-y: auto;
         }
         .rating-content h2 {
             color: var(--blue-neon);
@@ -585,32 +590,54 @@
             font-size: 14px;
             margin-bottom: 10px;
             font-family: var(--font-code);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .rating-category h3 .icon {
+            font-size: 18px;
         }
         .stars-container {
             display: flex;
             gap: 10px;
             justify-content: center;
             font-size: 24px;
+            flex-wrap: wrap;
         }
         .star-btn {
             background: transparent;
-            border: none;
+            border: 1px solid var(--green-matrix);
             cursor: pointer;
             font-size: 28px;
-            padding: 5px;
+            padding: 5px 10px;
             transition: all 0.2s ease;
             width: auto;
             margin: 0;
+            border-radius: 5px;
         }
         .star-btn:hover {
-            transform: scale(1.2);
+            transform: scale(1.1);
+            border-color: var(--blue-neon);
         }
-        .star-btn.active {
-            animation: star-pulse 0.3s ease;
+        .star-btn.selected {
+            background: var(--green-matrix);
+            color: var(--bg-color);
+            border-color: var(--green-matrix);
         }
-        @keyframes star-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
+        .rating-visual {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            min-height: 30px;
+        }
+        .rating-icon {
+            font-size: 20px;
+            animation: popIn 0.3s ease;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); }
             100% { transform: scale(1); }
         }
         .rating-save-btn {
@@ -1420,36 +1447,43 @@
     <div id="rating-modal" class="rating-modal hidden">
         <div class="rating-content">
             <h2 id="rating-capitulo-titulo">CAPÍTULO X</h2>
+            
             <div class="rating-category">
-                <h3>⭐ CALIDAD</h3>
-                <div class="stars-container" id="calidad-stars">
+                <h3><span class="icon">⭐</span> CALIDAD</h3>
+                <div class="stars-container" id="calidad-container">
                     <button class="star-btn" data-value="1">☆</button>
                     <button class="star-btn" data-value="2">☆</button>
                     <button class="star-btn" data-value="3">☆</button>
                     <button class="star-btn" data-value="4">☆</button>
                     <button class="star-btn" data-value="5">☆</button>
                 </div>
+                <div class="rating-visual" id="calidad-visual"></div>
             </div>
+            
             <div class="rating-category">
-                <h3>🌶️ SPICY</h3>
-                <div class="stars-container" id="spicy-stars">
+                <h3><span class="icon">🌶️</span> SPICY</h3>
+                <div class="stars-container" id="spicy-container">
                     <button class="star-btn" data-value="1">☆</button>
                     <button class="star-btn" data-value="2">☆</button>
                     <button class="star-btn" data-value="3">☆</button>
                     <button class="star-btn" data-value="4">☆</button>
                     <button class="star-btn" data-value="5">☆</button>
                 </div>
+                <div class="rating-visual" id="spicy-visual"></div>
             </div>
+            
             <div class="rating-category">
-                <h3>🔍 MISTERIO</h3>
-                <div class="stars-container" id="misterio-stars">
+                <h3><span class="icon">🔍</span> MISTERIO</h3>
+                <div class="stars-container" id="misterio-container">
                     <button class="star-btn" data-value="1">☆</button>
                     <button class="star-btn" data-value="2">☆</button>
                     <button class="star-btn" data-value="3">☆</button>
                     <button class="star-btn" data-value="4">☆</button>
                     <button class="star-btn" data-value="5">☆</button>
                 </div>
+                <div class="rating-visual" id="misterio-visual"></div>
             </div>
+            
             <button class="rating-save-btn" onclick="guardarCalificacion()">GUARDAR CALIFICACIÓN</button>
             <button class="rating-close-btn" onclick="cerrarCalificacion()">CANCELAR</button>
         </div>
@@ -1858,30 +1892,99 @@
         }
         function cerrarMensajeFinal() { document.getElementById('mensaje-final-modal').classList.add('hidden'); tocarSonido('click'); }
 
+        // SISTEMA DE CALIFICACIÓN VISUAL
         function abrirCalificacion(tomo, cap) {
             var capId = 't' + tomo + '_' + (cap === 'epilogue' ? 'epi' : cap === 'extra' ? 'extra' : cap === 0 ? 'p0' : 'c' + cap);
-            var calificaciones = getCalificaciones(), calificacionExistente = calificaciones[capId];
-            capituloActualCalificacion = capId; calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 };
-            if (calificacionExistente) { calificacionTemporal = calificacionExistente; }
+            var calificaciones = getCalificaciones();
+            var calificacionExistente = calificaciones[capId];
+            
+            capituloActualCalificacion = capId;
+            calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 };
+            
+            if (calificacionExistente) {
+                calificacionTemporal = calificacionExistente;
+            }
+            
             var tituloCap = cap === 0 ? 'PRÓLOGO' : cap === 'epilogue' ? 'EPÍLOGO' : cap === 'extra' ? 'ESCENA EXTRA' : 'CAP. ' + cap;
             document.getElementById('rating-capitulo-titulo').textContent = 'TOMO ' + tomo + ' - ' + tituloCap;
-            actualizarEstrellasVisuales('calidad', calificacionTemporal.calidad); actualizarEstrellasVisuales('spicy', calificacionTemporal.spicy); actualizarEstrellasVisuales('misterio', calificacionTemporal.misterio);
-            configurarListenersEstrellas('calidad'); configurarListenersEstrellas('spicy'); configurarListenersEstrellas('misterio');
-            document.getElementById('rating-modal').classList.remove('hidden'); tocarSonido('unlock');
+            
+            // Configurar botones y visuales
+            configurarCalificacionCategoria('calidad', '⭐', calificacionTemporal.calidad);
+            configurarCalificacionCategoria('spicy', '🌶️', calificacionTemporal.spicy);
+            configurarCalificacionCategoria('misterio', '🔍', calificacionTemporal.misterio);
+            
+            document.getElementById('rating-modal').classList.remove('hidden');
+            tocarSonido('unlock');
         }
-        function configurarListenersEstrellas(categoria) {
-            var container = document.getElementById(categoria + '-stars'), buttons = container.querySelectorAll('.star-btn');
+
+        function configurarCalificacionCategoria(categoria, icono, valor) {
+            var container = document.getElementById(categoria + '-container');
+            var visual = document.getElementById(categoria + '-visual');
+            var buttons = container.querySelectorAll('.star-btn');
+            
+            // Configurar botones
             buttons.forEach(function(btn) {
-                var newBtn = btn.cloneNode(true); btn.parentNode.replaceChild(newBtn, btn);
-                newBtn.addEventListener('click', function() { var value = parseInt(this.getAttribute('data-value')); calificacionTemporal[categoria] = value; actualizarEstrellasVisuales(categoria, value); tocarSonido('rating'); });
-                newBtn.addEventListener('mouseenter', function() { var value = parseInt(this.getAttribute('data-value')); resaltarEstrellas(categoria, value); });
-                newBtn.addEventListener('mouseleave', function() { actualizarEstrellasVisuales(categoria, calificacionTemporal[categoria]); });
+                var newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                newBtn.addEventListener('click', function() {
+                    var value = parseInt(this.getAttribute('data-value'));
+                    if (calificacionTemporal[categoria] === value) {
+                        calificacionTemporal[categoria] = 0; // Deseleccionar
+                    } else {
+                        calificacionTemporal[categoria] = value;
+                    }
+                    actualizarVisualCalificacion(categoria, icono);
+                    tocarSonido('rating');
+                });
             });
+            
+            actualizarVisualCalificacion(categoria, icono);
         }
-        function resaltarEstrellas(categoria, hasta) { var container = document.getElementById(categoria + '-stars'), buttons = container.querySelectorAll('.star-btn'); buttons.forEach(function(btn, index) { if (index < hasta) { btn.textContent = '★'; btn.style.color = 'var(--blue-neon)'; } else { btn.textContent = '☆'; btn.style.color = 'var(--green-matrix)'; } }); }
-        function actualizarEstrellasVisuales(categoria, valor) { var container = document.getElementById(categoria + '-stars'), buttons = container.querySelectorAll('.star-btn'); buttons.forEach(function(btn, index) { if (index < valor) { btn.textContent = '★'; btn.style.color = 'var(--blue-neon)'; btn.classList.add('active'); setTimeout(function() { btn.classList.remove('active'); }, 300); } else { btn.textContent = '☆'; btn.style.color = 'var(--green-matrix)'; } }); }
-        function guardarCalificacion() { if (!capituloActualCalificacion) return; var calificaciones = getCalificaciones(); calificaciones[capituloActualCalificacion] = calificacionTemporal; guardarCalificaciones(calificaciones); cerrarCalificacion(); renderizarCapitulos(); tocarSonido('chapter'); }
-        function cerrarCalificacion() { document.getElementById('rating-modal').classList.add('hidden'); capituloActualCalificacion = null; calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 }; }
+
+        function actualizarVisualCalificacion(categoria, icono) {
+            var container = document.getElementById(categoria + '-container');
+            var visual = document.getElementById(categoria + '-visual');
+            var buttons = container.querySelectorAll('.star-btn');
+            var valor = calificacionTemporal[categoria];
+            
+            // Actualizar botones
+            buttons.forEach(function(btn, index) {
+                if (index < valor) {
+                    btn.classList.add('selected');
+                    btn.textContent = icono;
+                } else {
+                    btn.classList.remove('selected');
+                    btn.textContent = '☆';
+                }
+            });
+            
+            // Actualizar visual
+            visual.innerHTML = '';
+            for (var i = 0; i < valor; i++) {
+                var icon = document.createElement('span');
+                icon.className = 'rating-icon';
+                icon.textContent = icono;
+                visual.appendChild(icon);
+            }
+        }
+
+        function guardarCalificacion() {
+            if (!capituloActualCalificacion) return;
+            var calificaciones = getCalificaciones();
+            calificaciones[capituloActualCalificacion] = calificacionTemporal;
+            guardarCalificaciones(calificaciones);
+            cerrarCalificacion();
+            renderizarCapitulos();
+            tocarSonido('chapter');
+        }
+
+        function cerrarCalificacion() {
+            document.getElementById('rating-modal').classList.add('hidden');
+            capituloActualCalificacion = null;
+            calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 };
+        }
+
         function tieneCapitulo(progreso, tomo, cap) { if (tomo === 1) { return progreso.tomo1.completados.indexOf(cap) !== -1; } else { return progreso.tomo2.completados.indexOf(cap) !== -1; } }
 
         function renderizarPerfiles() {
