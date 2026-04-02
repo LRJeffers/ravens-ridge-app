@@ -687,73 +687,201 @@
             color: var(--red-blood);
             margin-bottom: 15px;
         }
+        
+        /* GRID RESPONSIVE PARA MÓVIL */
+        .evidencias-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
         .culpable-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-top: 15px;
         }
+        
+        .perfil-evidencia-card {
+            border: 1px solid var(--green-matrix);
+            padding: 12px;
+            background: #050505;
+            border-radius: 5px;
+        }
+        
+        .perfil-evidencia-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--green-matrix);
+        }
+        
+        .perfil-evidencia-header img {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid var(--green-matrix);
+        }
+        
+        .perfil-evidencia-header h4 {
+            color: var(--blue-neon);
+            font-size: 11px;
+            font-family: var(--font-code);
+        }
+        
+        .evidencia-counter {
+            color: var(--green-matrix);
+            font-size: 9px;
+            font-family: var(--font-code);
+        }
+        
+        .evidencia-lista-mini {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .evidencia-item-mini {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            border: 1px solid var(--green-matrix);
+            background: #0a0a0a;
+            font-size: 9px;
+        }
+        
+        .evidencia-checkbox-mini {
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--green-matrix);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        
+        .evidencia-item-mini.completed .evidencia-checkbox-mini {
+            background: var(--green-matrix);
+        }
+        
+        .evidencia-item-mini.completed .evidencia-checkbox-mini::after {
+            content: '✓';
+            color: var(--bg-color);
+            font-weight: bold;
+            font-size: 7px;
+        }
+        
+        .evidencia-input-mini {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--green-matrix);
+            font-family: var(--font-code);
+            font-size: 9px;
+            padding: 2px;
+        }
+        
+        .evidencia-delete-btn-mini {
+            width: auto;
+            padding: 2px 5px;
+            font-size: 8px;
+            margin: 0;
+            border-color: var(--red-blood);
+            color: var(--red-blood);
+        }
+        
+        .evidencia-add-btn-mini {
+            width: 100%;
+            padding: 5px;
+            font-size: 9px;
+            margin-top: 5px;
+        }
+        
+        .evidencia-bloqueado-msg {
+            color: var(--red-blood);
+            font-size: 8px;
+            font-family: var(--font-code);
+            margin-top: 6px;
+            font-style: italic;
+        }
+        
         .culpable-card {
             border: 2px solid var(--green-matrix);
-            padding: 12px;
+            padding: 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             background: #050505;
             border-radius: 5px;
         }
+        
         .culpable-card:hover {
             border-color: var(--blue-neon);
             box-shadow: 0 0 15px var(--blue-neon);
             transform: translateY(-2px);
         }
+        
         .culpable-card.selected-culpable {
             border-color: var(--red-blood);
             background: rgba(139, 0, 0, 0.3);
         }
+        
         .culpable-card.selected-sospechoso {
             border-color: var(--blue-neon);
             background: rgba(0, 255, 255, 0.1);
         }
+        
         .culpable-card.locked {
             opacity: 0.5;
             cursor: not-allowed;
         }
+        
         .culpable-card img {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             object-fit: cover;
             border-radius: 50%;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             border: 2px solid var(--green-matrix);
         }
+        
         .culpable-card h4 {
-            font-size: 11px;
+            font-size: 10px;
             font-family: var(--font-code);
         }
+        
         .culpable-info {
             margin-top: 20px;
             padding: 15px;
             border: 1px solid var(--blue-neon);
             background: #050505;
         }
+        
         .culpable-info p {
             font-size: 12px;
             font-family: var(--font-code);
             line-height: 1.6;
             margin-bottom: 5px;
         }
+        
         .progreso-tablero {
             margin-bottom: 20px;
             padding: 15px;
             border: 1px solid var(--blue-neon);
             background: #050505;
         }
+        
         .progreso-tablero p {
             font-size: 12px;
             font-family: var(--font-code);
             margin-bottom: 10px;
         }
+        
         .mensaje-final {
             position: fixed;
             top: 0;
@@ -769,12 +897,14 @@
             text-align: center;
             padding: 40px;
         }
+        
         .mensaje-final h1 {
             color: var(--red-blood);
             font-size: 32px;
             margin-bottom: 30px;
             text-shadow: 0 0 20px var(--red-blood);
         }
+        
         .mensaje-final .contenido {
             max-width: 700px;
             font-family: var(--font-code);
@@ -782,14 +912,17 @@
             line-height: 2;
             color: var(--green-matrix);
         }
+        
         .mensaje-final .acierto {
             color: var(--blue-neon);
             font-weight: bold;
         }
+        
         .mensaje-final .fallo {
             color: var(--red-blood);
             font-weight: bold;
         }
+        
         .mensaje-final .cerrar-btn {
             margin-top: 40px;
             width: auto;
@@ -797,112 +930,14 @@
             border-color: var(--green-matrix);
             color: var(--green-matrix);
         }
-        .perfil-evidencia-card {
-            border: 1px solid var(--green-matrix);
-            padding: 15px;
-            background: #050505;
-            border-radius: 5px;
-        }
-        .perfil-evidencia-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--green-matrix);
-        }
-        .perfil-evidencia-header img {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid var(--green-matrix);
-        }
-        .perfil-evidencia-header h4 {
-            color: var(--blue-neon);
-            font-size: 12px;
-            font-family: var(--font-code);
-        }
-        .evidencia-counter {
-            color: var(--green-matrix);
-            font-size: 10px;
-            font-family: var(--font-code);
-        }
-        .evidencias-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-        }
-        .evidencia-lista-mini {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-        .evidencia-item-mini {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px;
-            border: 1px solid var(--green-matrix);
-            background: #0a0a0a;
-            font-size: 10px;
-        }
-        .evidencia-checkbox-mini {
-            width: 14px;
-            height: 14px;
-            border: 2px solid var(--green-matrix);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-shrink: 0;
-            cursor: pointer;
-        }
-        .evidencia-item-mini.completed .evidencia-checkbox-mini {
-            background: var(--green-matrix);
-        }
-        .evidencia-item-mini.completed .evidencia-checkbox-mini::after {
-            content: '✓';
-            color: var(--bg-color);
-            font-weight: bold;
-            font-size: 8px;
-        }
-        .evidencia-input-mini {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--green-matrix);
-            font-family: var(--font-code);
-            font-size: 10px;
-            padding: 2px;
-        }
-        .evidencia-delete-btn-mini {
-            width: auto;
-            padding: 2px 6px;
-            font-size: 9px;
-            margin: 0;
-            border-color: var(--red-blood);
-            color: var(--red-blood);
-        }
-        .evidencia-add-btn-mini {
-            width: 100%;
-            padding: 6px;
-            font-size: 10px;
-            margin-top: 5px;
-        }
-        .evidencia-bloqueado-msg {
-            color: var(--red-blood);
-            font-size: 9px;
-            font-family: var(--font-code);
-            margin-top: 8px;
-            font-style: italic;
-        }
+        
         .diario-editor-container {
             border: 1px solid var(--blue-neon);
             background: #050505;
             padding: 20px;
             margin-top: 20px;
         }
+        
         .diario-toolbar {
             display: flex;
             gap: 10px;
@@ -911,16 +946,14 @@
             border-bottom: 1px solid var(--green-matrix);
             padding-bottom: 15px;
         }
+        
         .diario-toolbar button {
             width: auto;
             padding: 8px 15px;
             font-size: 14px;
             margin: 0;
         }
-        .diario-toolbar button.active {
-            background: var(--blue-neon);
-            color: var(--bg-color);
-        }
+        
         .diario-content {
             min-height: 300px;
             border: 1px solid var(--green-matrix);
@@ -932,22 +965,26 @@
             color: var(--green-matrix);
             outline: none;
         }
+        
         .diario-content:focus {
             border-color: var(--blue-neon);
             box-shadow: 0 0 10px var(--blue-neon);
         }
+        
         .diario-saved-indicator {
             color: var(--blue-neon);
             font-size: 11px;
             margin-top: 10px;
             font-family: var(--font-code);
         }
+        
         .diario-capitulo-info {
             color: var(--blue-neon);
             font-size: 14px;
             margin-bottom: 15px;
             font-family: var(--font-code);
         }
+        
         .popup-sistema {
             position: fixed;
             top: 50%;
@@ -962,6 +999,7 @@
             max-width: 450px;
             font-family: var(--font-code);
         }
+        
         .popup-overlay {
             position: fixed;
             top: 0;
@@ -971,6 +1009,7 @@
             background: rgba(0,0,0,0.85);
             z-index: 4999;
         }
+        
         .audio-unlock-screen {
             position: fixed;
             top: 0;
@@ -984,14 +1023,17 @@
             z-index: 10000;
             text-align: center;
         }
+        
         .audio-unlock-screen h2 {
             color: var(--blue-neon);
             margin-bottom: 20px;
         }
+        
         .audio-unlock-screen p {
             color: var(--green-matrix);
             margin-bottom: 30px;
         }
+        
         .audio-unlock-screen button {
             width: auto;
             padding: 15px 40px;
@@ -999,9 +1041,11 @@
             background: var(--green-matrix);
             color: var(--bg-color);
         }
+        
         .diario-buscador-capitulos {
             margin-bottom: 15px;
         }
+        
         .diario-buscador-capitulos input {
             width: 100%;
             padding: 12px;
@@ -1011,6 +1055,7 @@
             font-family: var(--font-code);
             font-size: 14px;
         }
+        
         .diario-capitulos-scroll {
             max-height: 250px;
             overflow-y: auto;
@@ -1019,19 +1064,11 @@
             background: #0a0a0a;
             margin-top: 10px;
         }
-        .diario-capitulos-scroll::-webkit-scrollbar {
-            width: 6px;
-        }
-        .diario-capitulos-scroll::-webkit-scrollbar-track {
-            background: #050505;
-        }
-        .diario-capitulos-scroll::-webkit-scrollbar-thumb {
-            background: var(--blue-neon);
-            border-radius: 3px;
-        }
+        
         .capitulos-buscador {
             margin-bottom: 15px;
         }
+        
         .capitulos-buscador input {
             width: 100%;
             padding: 12px;
@@ -1041,6 +1078,7 @@
             font-family: var(--font-code);
             font-size: 14px;
         }
+        
         .capitulos-scroll {
             max-height: 350px;
             overflow-y: auto;
@@ -1049,15 +1087,52 @@
             background: #0a0a0a;
             margin-top: 10px;
         }
+        
+        .diario-capitulos-scroll::-webkit-scrollbar,
         .capitulos-scroll::-webkit-scrollbar {
             width: 6px;
         }
+        
+        .diario-capitulos-scroll::-webkit-scrollbar-track,
         .capitulos-scroll::-webkit-scrollbar-track {
             background: #050505;
         }
+        
+        .diario-capitulos-scroll::-webkit-scrollbar-thumb,
         .capitulos-scroll::-webkit-scrollbar-thumb {
             background: var(--blue-neon);
             border-radius: 3px;
+        }
+        
+        /* MEDIA QUERIES PARA MÓVIL */
+        @media (max-width: 480px) {
+            .evidencias-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .culpable-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .perfil-evidencia-header img {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .culpable-card img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tomo-selector {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
