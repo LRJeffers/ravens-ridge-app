@@ -2247,6 +2247,13 @@ function actualizarBotonesSonido() {
 
 function aplicarIdioma(lang) {
     document.title = t('app_title');
+    // Barra de utilidades e interfaz superior
+    document.querySelectorAll('.lbl-idioma-text').forEach(function(el) {
+        el.textContent = t('lbl_idioma');
+    });
+    actualizarBotonesModoAccesible();
+    actualizarBotonesSonido();
+
     
     // Pantalla Seguridad
     var secQ = document.querySelector('#pantalla-seguridad label');
@@ -2344,6 +2351,13 @@ function aplicarIdioma(lang) {
     if (diarSaveBtn) diarSaveBtn.textContent = t('save_entry_btn');
     var diarSavedInd = document.getElementById('diario-guardado-indicador');
     if (diarSavedInd) diarSavedInd.textContent = t('entry_saved');
+    var diarClearBtn = document.querySelector('#pantalla-diario button[onclick*="limpiarFormatoDiario"]');
+    if (diarClearBtn) diarClearBtn.textContent = t('clean_format_btn');
+    var finH1 = document.querySelector('#mensaje-final-modal h1');
+    if (finH1) finH1.textContent = t('archive_closed_header');
+    var finBtn = document.querySelector('#mensaje-final-modal .cerrar-btn');
+    if (finBtn) finBtn.textContent = t('continue_btn');
+
 
     // Detalle Perfil
     var tagsLbl = document.querySelector('#tags-section label');
