@@ -1272,8 +1272,7 @@
         <div style="max-width: 440px; width: 92%; padding: 25px 20px; background: rgba(5,5,5,0.95); border: 2px solid var(--green-matrix); box-shadow: 0 0 25px rgba(0,255,65,0.3); border-radius: 6px; text-align: center;">
             <div class="utility-header-bar" style="margin-bottom: 25px;">
                 <div class="utility-group">
-                    <span class="utility-label lbl-idioma-text">🌐 Idioma:</span>
-                    <button type="button" class="util-btn active btn-lang-es" onclick="cambiarIdioma('es')">ES</button>
+                        <button type="button" class="util-btn active btn-lang-es" onclick="cambiarIdioma('es')">ES</button>
                     <button type="button" class="util-btn btn-lang-en" onclick="cambiarIdioma('en')">EN</button>
                     <button type="button" class="util-btn btn-lang-pt" onclick="cambiarIdioma('pt')">PT</button>
                 </div>
@@ -1307,7 +1306,6 @@
         <!-- BARRA DE AJUSTES RÁPIDOS (IDIOMA / ACCESIBILIDAD) -->
         <div class="utility-header-bar">
             <div class="utility-group">
-                <span class="utility-label lbl-idioma-text">🌐 Idioma:</span>
                 <button type="button" class="util-btn active btn-lang-es" onclick="cambiarIdioma('es')">ES</button>
                 <button type="button" class="util-btn btn-lang-en" onclick="cambiarIdioma('en')">EN</button>
                 <button type="button" class="util-btn btn-lang-pt" onclick="cambiarIdioma('pt')">PT</button>
@@ -1338,7 +1336,6 @@
         <!-- BARRA DE AJUSTES RÁPIDOS (IDIOMA / ACCESIBILIDAD) -->
         <div class="utility-header-bar">
             <div class="utility-group">
-                <span class="utility-label lbl-idioma-text">🌐 Idioma:</span>
                 <button type="button" class="util-btn active btn-lang-es" onclick="cambiarIdioma('es')">ES</button>
                 <button type="button" class="util-btn btn-lang-en" onclick="cambiarIdioma('en')">EN</button>
                 <button type="button" class="util-btn btn-lang-pt" onclick="cambiarIdioma('pt')">PT</button>
@@ -1369,7 +1366,6 @@
         <!-- BARRA DE AJUSTES RÁPIDOS (IDIOMA / ACCESIBILIDAD) -->
         <div class="utility-header-bar">
             <div class="utility-group">
-                <span class="utility-label lbl-idioma-text">🌐 Idioma:</span>
                 <button type="button" class="util-btn active btn-lang-es" onclick="cambiarIdioma('es')">ES</button>
                 <button type="button" class="util-btn btn-lang-en" onclick="cambiarIdioma('en')">EN</button>
                 <button type="button" class="util-btn btn-lang-pt" onclick="cambiarIdioma('pt')">PT</button>
@@ -1402,7 +1398,6 @@
         <!-- BARRA DE AJUSTES RÁPIDOS (IDIOMA / ACCESIBILIDAD) -->
         <div class="utility-header-bar">
             <div class="utility-group">
-                <span class="utility-label lbl-idioma-text">🌐 Idioma:</span>
                 <button type="button" class="util-btn active btn-lang-es" onclick="cambiarIdioma('es')">ES</button>
                 <button type="button" class="util-btn btn-lang-en" onclick="cambiarIdioma('en')">EN</button>
                 <button type="button" class="util-btn btn-lang-pt" onclick="cambiarIdioma('pt')">PT</button>
@@ -1428,7 +1423,6 @@
         <!-- BARRA DE AJUSTES RÁPIDOS (IDIOMA / ACCESIBILIDAD) -->
         <div class="utility-header-bar">
             <div class="utility-group">
-                <span class="utility-label lbl-idioma-text">🌐 Idioma:</span>
                 <button type="button" class="util-btn active btn-lang-es" onclick="cambiarIdioma('es')">ES</button>
                 <button type="button" class="util-btn btn-lang-en" onclick="cambiarIdioma('en')">EN</button>
                 <button type="button" class="util-btn btn-lang-pt" onclick="cambiarIdioma('pt')">PT</button>
@@ -1499,7 +1493,6 @@
         <!-- BARRA DE AJUSTES RÁPIDOS (IDIOMA / ACCESIBILIDAD) -->
         <div class="utility-header-bar">
             <div class="utility-group">
-                <span class="utility-label lbl-idioma-text">🌐 Idioma:</span>
                 <button type="button" class="util-btn active btn-lang-es" onclick="cambiarIdioma('es')">ES</button>
                 <button type="button" class="util-btn btn-lang-en" onclick="cambiarIdioma('en')">EN</button>
                 <button type="button" class="util-btn btn-lang-pt" onclick="cambiarIdioma('pt')">PT</button>
@@ -1539,7 +1532,6 @@
         <!-- BARRA DE AJUSTES RÁPIDOS (IDIOMA / ACCESIBILIDAD) -->
         <div class="utility-header-bar">
             <div class="utility-group">
-                <span class="utility-label lbl-idioma-text">🌐 Idioma:</span>
                 <button type="button" class="util-btn active btn-lang-es" onclick="cambiarIdioma('es')">ES</button>
                 <button type="button" class="util-btn btn-lang-en" onclick="cambiarIdioma('en')">EN</button>
                 <button type="button" class="util-btn btn-lang-pt" onclick="cambiarIdioma('pt')">PT</button>
@@ -1596,7 +1588,6 @@
         <!-- BARRA DE AJUSTES RÁPIDOS (IDIOMA / ACCESIBILIDAD) -->
         <div class="utility-header-bar">
             <div class="utility-group">
-                <span class="utility-label lbl-idioma-text">🌐 Idioma:</span>
                 <button type="button" class="util-btn active btn-lang-es" onclick="cambiarIdioma('es')">ES</button>
                 <button type="button" class="util-btn btn-lang-en" onclick="cambiarIdioma('en')">EN</button>
                 <button type="button" class="util-btn btn-lang-pt" onclick="cambiarIdioma('pt')">PT</button>
@@ -2157,7 +2148,7 @@ var calificacionTemporal = { calidad: 0, spicy: 0, misterio: 0 };
 // INICIAR APP & SERVICE WORKER
 window.onload = function() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').catch(function(e) { console.log('SW:', e); });
+        navigator.serviceWorker.register('sw.js?v=2.1').then(function(reg) { reg.update(); }).catch(function(e) { console.log('SW:', e); });
     }
 
     if (modoAccesible) {
@@ -2269,10 +2260,7 @@ function aplicarIdioma(lang) {
     if (aBtn) aBtn.textContent = t('audio_unlock_btn');
 
     // Barra de utilidades e interfaz superior
-    document.querySelectorAll('.lbl-idioma-text').forEach(function(el) {
-        el.textContent = t('lbl_idioma');
-    });
-    actualizarBotonesModoAccesible();
+        actualizarBotonesModoAccesible();
     actualizarBotonesSonido();
 
     
